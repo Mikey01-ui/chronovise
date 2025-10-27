@@ -35,7 +35,7 @@
   if(password !== DEMO_PASSWORD) throw new Error('Invalid demo password');
   saveUser(user);
   // Ensure sessionStorage is set before redirect
-  await delay(120); // short delay to allow sessionStorage to persist
+  await delay(400); // increased delay to allow sessionStorage to persist reliably
   const target = user.type === 'student' ? '../dashboard/student.html' : '../dashboard/employer.html';
   location.href = target;
   return user;
