@@ -24,9 +24,9 @@
   const employers = Array.from({length: 12}, (_,i)=> seed('Employer', i+1));
   const accounts = [...students, ...employers];
 
-  function saveUser(u){ sessionStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
-  function getUser(){ const raw = sessionStorage.getItem(STORAGE_KEY); try{ return raw? JSON.parse(raw): null;}catch{ return null; } }
-  function clearUser(){ sessionStorage.removeItem(STORAGE_KEY); }
+  function saveUser(u){ localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
+  function getUser(){ const raw = localStorage.getItem(STORAGE_KEY); try{ return raw? JSON.parse(raw): null;}catch{ return null; } }
+  function clearUser(){ localStorage.removeItem(STORAGE_KEY); }
 
   async function demoLogin(email, password){
   await delay(300);
