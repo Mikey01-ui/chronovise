@@ -33,9 +33,11 @@
   const user = accounts.find(a=> a.email.toLowerCase() === String(email).toLowerCase());
   if(!user) throw new Error('User not found in demo accounts');
   if(password !== DEMO_PASSWORD) throw new Error('Invalid demo password');
-  saveUser(user);
-  // Pass justLoggedIn flag to dashboard for robust session detection
-  const target = user.type === 'student' ? '../dashboard/student.html?justLoggedIn=1' : '../dashboard/employer.html?justLoggedIn=1';
+  // Encode user info in URL for dashboard
+  const userParam = encodeURIComponent(btoa(JSON.stringify(user)));
+  const target = user.type === 'student'
+    ? `../dashboard/student.html?user=${userParam}`
+    : `../dashboard/employer.html?user=${userParam}`;
   location.href = target;
   return user;
   }

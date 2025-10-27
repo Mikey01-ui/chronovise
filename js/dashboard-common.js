@@ -31,15 +31,16 @@
     constructor(){ this.user = null; this.currentSection = null; }
 
     async init(){
-      // Robust session detection: retry if justLoggedIn flag is present
+      // Read user from URL if present
       const urlParams = new URLSearchParams(window.location.search);
-      let retries = urlParams.has('justLoggedIn') ? 6 : 1;
       let user = null;
-      while(retries-- > 0) {
-        user = await getCurrentUser();
-        if(user) break;
-        await new Promise(r=>setTimeout(r, 120));
+      if(urlParams.has('user')) {
+        try {
+          user = JSON.parse(atob(decodeURIComponent(urlParams.get('user'))));
+        } catch {}
       }
+      // Fallback to API if not in URL
+      if(!user) user = await getCurrentUser();
       this.user = user;
       if(!this.user){ location.href = '../auth/login.html'; return; }
       this.bindNav();
