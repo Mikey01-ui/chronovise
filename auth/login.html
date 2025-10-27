@@ -44,24 +44,9 @@
 
         <hr style="border-color: rgba(255,255,255,.08); margin: 16px 0" />
 
-        <div class="row">
-          <div class="field" style="flex: 1 1 220px; min-width:220px;">
-            <label for="type">Use random demo account</label>
-            <div class="row">
-              <select id="type">
-                <option value="any">Any</option>
-                <option value="student">Student</option>
-                <option value="employer">Employer</option>
-              </select>
-              <button id="randomBtn" class="btn btn-outline" type="button">Use random</button>
-            </div>
-          </div>
-          <div>
-            <button id="toggleList" class="btn btn-ghost" type="button">Show demo accounts</button>
-          </div>
+        <div class="row" style="margin-top:24px;">
+          <button id="randomLoginBtn" class="btn btn-gradient" type="button" style="width:100%;font-size:1.1em;">Login as random demo user</button>
         </div>
-
-        <div id="demoList" class="demo-list" hidden></div>
       </section>
     </main>
     <script src="../js/demo-auth.js"></script>
@@ -73,25 +58,11 @@
         const password = f.password.value;
         try { await window.demoLogin(email, password); } catch (err){ alert(err.message || 'Login failed'); }
       });
-      document.getElementById('randomBtn').addEventListener('click', ()=>{
-        const type = document.getElementById('type').value;
-        window.useRandomDemoAccount(type);
-      });
-      const btnList = document.getElementById('toggleList');
-      const list = document.getElementById('demoList');
-      btnList.addEventListener('click', ()=>{
-        const show = list.hasAttribute('hidden');
-        if(show){
-          list.removeAttribute('hidden'); btnList.textContent='Hide demo accounts';
-          list.innerHTML = '';
-          (window.demoAccounts||[]).forEach(a=>{
-            const row = document.createElement('div'); row.className='demo-item';
-            row.innerHTML = `<div><strong>${a.name}</strong> — <span class="muted">${a.email}</span></div>`;
-            const b = document.createElement('button'); b.className='btn btn-small btn-outline'; b.textContent='Use';
-            b.addEventListener('click', ()=> window.demoLogin(a.email, 'demo123'));
-            row.appendChild(b); list.appendChild(row);
-          });
-        } else { list.setAttribute('hidden',''); btnList.textContent='Show demo accounts'; }
+      document.getElementById('randomLoginBtn').addEventListener('click', ()=>{
+        const accounts = window.demoAccounts || [];
+        if(accounts.length === 0) return alert('No demo accounts available');
+        const choice = accounts[Math.floor(Math.random()*accounts.length)];
+        window.demoLogin(choice.email, 'demo123');
       });
     </script>
   </body>
