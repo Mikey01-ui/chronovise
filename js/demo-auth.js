@@ -98,6 +98,12 @@
 
   // Mock API layer
   async function mockApi(endpoint, options={}){
+    if(endpoint.includes('/api/students/all')){
+      return { ok:true, status:200, data: students };
+    }
+    if(endpoint.includes('/api/employers/all')){
+      return { ok:true, status:200, data: employers };
+    }
     await delay(220 + Math.random()*180);
     const user = getUser();
     if(endpoint.includes('/api/auth/me')){

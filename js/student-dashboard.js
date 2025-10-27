@@ -1,3 +1,14 @@
+  async function loadAllStudents(){
+    const students = await apiRequest('/api/students/all');
+    const list = qs('#allStudentsList');
+    if(!list) return;
+    list.innerHTML = '';
+    students.forEach(s => {
+      const item = document.createElement('div'); item.className = 'list-item';
+      item.innerHTML = `<strong>${s.name}</strong> — <span class='muted'>${s.email}</span> <span class='badge'>${s.education}</span> <span class='badge'>${s.location}</span>`;
+      list.appendChild(item);
+    });
+  }
 // Student dashboard logic: profile, stats, jobs, applications
 (function(){
   const { formatDate, showNotification } = window.dashboardUtils || {};
@@ -89,5 +100,6 @@
     loadStats();
     loadJobs();
     loadApplications();
+      loadAllStudents();
   });
 })();

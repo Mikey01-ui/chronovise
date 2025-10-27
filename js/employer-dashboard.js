@@ -1,3 +1,14 @@
+  async function loadAllEmployers(){
+    const employers = await apiRequest('/api/employers/all');
+    const list = qs('#allEmployersList');
+    if(!list) return;
+    list.innerHTML = '';
+    employers.forEach(e => {
+      const item = document.createElement('div'); item.className = 'list-item';
+      item.innerHTML = `<strong>${e.name}</strong> — <span class='muted'>${e.email}</span> <span class='badge'>${e.company}</span> <span class='badge'>${e.location}</span>`;
+      list.appendChild(item);
+    });
+  }
 // Employer dashboard logic: overview, jobs, applications, simple post form (demo)
 (function(){
   const { showNotification } = window.dashboardUtils || {};
@@ -57,5 +68,6 @@
     loadJobs();
     loadApplications();
     bindPostForm();
+      loadAllEmployers();
   });
 })();
