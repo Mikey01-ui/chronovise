@@ -44,11 +44,23 @@
 
         <hr style="border-color: rgba(255,255,255,.08); margin: 16px 0" />
 
-        <div class="row" style="margin-top:24px;">
-          <button id="randomLoginBtn" class="btn btn-gradient" type="button" style="width:100%;font-size:1.1em;">Login as random demo user</button>
-        </div>
-        <div style="margin-top:18px;text-align:center;">
-          <a href="../dashboard/all-students.html" class="btn btn-outline" style="width:100%;font-size:1.05em;">View All Demo Students</a>
+        <div style="margin-top:18px;">
+          <h4 style="margin:8px 0 6px 0">Use random demo account</h4>
+          <div class="row" style="align-items:center;">
+            <select id="randomType" style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#fff;">
+              <option value="any">Any</option>
+              <option value="student">Student</option>
+              <option value="employer">Employer</option>
+            </select>
+            <button id="showDemoBtn" class="btn btn-outline" type="button" style="margin-left:10px;">Show demo accounts</button>
+          </div>
+          <div style="margin-top:10px;">
+            <button id="useRandomBtn" class="btn btn-gradient" type="button">Use random</button>
+          </div>
+          <div class="demo-list" id="demoList" style="display:none;margin-top:12px;"></div>
+          <div style="margin-top:14px;text-align:center;">
+            <a href="../dashboard/all-students.html" class="btn btn-outline" style="width:100%;font-size:1.05em;">View All Demo Students</a>
+          </div>
         </div>
       </section>
     </main>
@@ -61,9 +73,35 @@
         const password = f.password.value;
         try { await window.demoLogin(email, password); } catch (err){ alert(err.message || 'Login failed'); }
       });
-      document.getElementById('randomLoginBtn').addEventListener('click', ()=>{
-        const accounts = (window.demoAccounts || []).filter(a => a.type === 'student');
-        if(accounts.length === 0) return alert('No demo student accounts available');
+      const demoListEl = document.getElementById('demoList');
+      const showDemoBtn = document.getElementById('showDemoBtn');
+      const useRandomBtn = document.getElementById('useRandomBtn');
+      const randomType = document.getElementById('randomType');
+
+      function renderDemoList(type='any'){
+        const accounts = (window.demoAccounts || []).filter(a=> type==='any' ? true : a.type===type);
+        demoListEl.innerHTML = '';
+        if(accounts.length===0){ demoListEl.innerHTML = '<div class="muted">No demo accounts available.</div>'; return; }
+        accounts.forEach(a=>{
+          const it = document.createElement('div'); it.className = 'demo-item';
+          it.innerHTML = `<div><strong>${a.name}</strong> <div class="muted" style="font-size:12px">${a.email}</div></div>`;
+          const btn = document.createElement('button'); btn.className = 'btn btn-small btn-outline'; btn.textContent = 'Login';
+          btn.addEventListener('click', ()=> window.demoLogin(a.email, 'demo123'));
+          it.appendChild(btn);
+          demoListEl.appendChild(it);
+        });
+      }
+
+      showDemoBtn.addEventListener('click', ()=>{
+        const t = randomType.value;
+        if(demoListEl.style.display === 'none'){ renderDemoList(t); demoListEl.style.display = 'block'; showDemoBtn.textContent = 'Hide demo accounts'; }
+        else { demoListEl.style.display = 'none'; showDemoBtn.textContent = 'Show demo accounts'; }
+      });
+
+      useRandomBtn.addEventListener('click', ()=>{
+        const type = randomType.value;
+        const accounts = (window.demoAccounts || []).filter(a=> type==='any' ? true : a.type===type);
+        if(accounts.length===0) return alert('No demo accounts available for selected type');
         const choice = accounts[Math.floor(Math.random()*accounts.length)];
         window.demoLogin(choice.email, 'demo123');
       });
