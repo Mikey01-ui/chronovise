@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ChronoVize — Employer Dashboard (Demo)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+  </head>
+  <body>
+    <header class="dash-header">
+      <div class="container inner">
+        <a href="../index.html" class="dash-brand"><img src="../assets/logo.svg" width="24" height="24" alt=""/> ChronoVize</a>
+        <div></div>
+        <div class="user-pill">
+          <span class="avatar" id="userAvatar"></span>
+          <span id="userName">User</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="dashboard-grid container">
+      <aside class="sidebar">
+        <nav>
+          <ul class="side-nav">
+            <li><a href="#" data-nav="overview" aria-current="page"><span class="label">Overview</span></a></li>
+            <li><a href="#" data-nav="jobs"><span class="label">My Jobs</span></a></li>
+            <li><a href="#" data-nav="post"><span class="label">Post Job</span></a></li>
+            <li><a href="#" data-nav="applications"><span class="label">Applications</span></a></li>
+            <li><a href="#" data-nav="company"><span class="label">Company Profile</span></a></li>
+          </ul>
+        </nav>
+      </aside>
+      <main class="dash-main">
+        <section class="dash-section active" data-section="overview" aria-labelledby="overview-head">
+          <h2 id="overview-head" tabindex="-1">Overview</h2>
+          <div class="cards">
+            <div class="card span-4"><div class="muted">Open jobs</div><div id="eStatJobs" style="font-size:28px;font-weight:800;">—</div></div>
+            <div class="card span-4"><div class="muted">Applicants</div><div id="eStatApplicants" style="font-size:28px;font-weight:800;">—</div></div>
+            <div class="card span-4"><div class="muted">Interviews</div><div id="eStatInterviews" style="font-size:28px;font-weight:800;">—</div></div>
+          </div>
+        </section>
+        <section class="dash-section" data-section="jobs" aria-labelledby="jobs-head">
+          <h2 id="jobs-head" tabindex="-1">My jobs</h2>
+          <div id="eJobsList" class="list"></div>
+        </section>
+        <section class="dash-section" data-section="post" aria-labelledby="post-head">
+          <h2 id="post-head" tabindex="-1">Post a job</h2>
+          <form id="postJobForm" class="card" style="max-width:560px;">
+            <div class="field"><label>Title<input name="title" required /></label></div>
+            <div class="field"><label>Location<input name="location" required /></label></div>
+            <div class="field"><label>Type<select name="type"><option>On-site</option><option>Hybrid</option><option>Remote</option></select></label></div>
+            <div class="field"><label>Description<textarea name="desc" rows="4" style="width:100%"></textarea></label></div>
+            <button class="btn btn-gradient">Post (demo)</button>
+          </form>
+        </section>
+        <section class="dash-section" data-section="applications" aria-labelledby="apps-head">
+          <h2 id="apps-head" tabindex="-1">Applications</h2>
+          <div id="eAppsList" class="list"></div>
+        </section>
+        <section class="dash-section" data-section="company" aria-labelledby="company-head">
+          <h2 id="company-head" tabindex="-1">Company profile</h2>
+          <div class="card" style="max-width:560px;">
+            <p class="muted">This is a demo area. In production, add your company info, logo, and links.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../js/dashboard-common.js"></script>
+    <script src="../js/employer-dashboard.js"></script>
+  </body>
+  </html>

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#6a5acd" />
+    <title>ChronoVize — Hire Faster. Launch Careers.</title>
+    <meta name="description" content="ChronoVize: lightning‑fast student hiring with auto‑generated CVs and a gorgeous, animated demo experience." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header glass">
+      <nav class="nav container" aria-label="Main">
+        <a href="#" class="nav-brand" aria-label="ChronoVize home">
+          <img src="assets/logo.svg" alt="ChronoVize" width="32" height="32" />
+          <span>ChronoVize</span>
+        </a>
+        <button class="nav-toggle" aria-controls="nav-menu" aria-expanded="false" aria-label="Open menu">
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </button>
+        <div id="nav-menu" class="nav-menu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+          <ul class="nav-links">
+            <li><a href="#students" class="nav-link">Students</a></li>
+            <li><a href="#employers" class="nav-link">Employers</a></li>
+            <li><a href="#pricing" class="nav-link">Pricing</a></li>
+            <li><a href="#faq" class="nav-link">FAQ</a></li>
+          </ul>
+          <div class="nav-actions">
+            <a class="btn btn-outline magnetic" href="auth/login.html">Login</a>
+            <button id="shareBtn" class="btn btn-gradient magnetic">Share</button>
+          </div>
+        </div>
+      </nav>
+      <div id="scrollProgress" class="scroll-progress" aria-hidden="true"></div>
+    </header>
+
+    <main id="main">
+      <!-- Hero -->
+      <section class="hero-section section-padding" aria-labelledby="hero-title">
+        <div class="hero-bg">
+          <div class="blob blob-1"></div>
+          <div class="blob blob-2"></div>
+          <div class="grid-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="container hero-grid">
+          <div class="hero-copy reveal-up">
+            <h1 id="hero-title" class="hero-title">Hire faster. Launch careers.</h1>
+            <p class="hero-sub">A beautiful, animated demo of ChronoVize: auto‑CVs for students, instant talent access for employers.</p>
+            <div class="hero-ctas">
+              <a class="btn btn-gradient magnetic" href="auth/login.html">Try the demo</a>
+              <a class="btn btn-ghost magnetic" href="#students">Explore features</a>
+            </div>
+            <div class="hero-badges">
+              <span class="badge glow">Auto‑generated CV</span>
+              <span class="badge glow">Visa‑friendly matches</span>
+              <span class="badge glow">100% front‑end demo</span>
+            </div>
+          </div>
+          <div class="hero-visual reveal-up delay-1">
+            <div class="phone-stack tilt">
+              <div class="phone ui-card shimmer">
+                <div class="ui-top">
+                  <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                </div>
+                <div class="ui-body">
+                  <h3>Student CV</h3>
+                  <ul class="ui-list">
+                    <li><strong>Maria</strong> • Data Science • Visa: NL</li>
+                    <li>Python, SQL, Tableau, ML</li>
+                    <li>Available • Remote friendly</li>
+                  </ul>
+                  <button class="btn btn-small btn-gradient">Preview</button>
+                </div>
+              </div>
+              <div class="phone ui-card card-2">
+                <div class="ui-body">
+                  <h3>Top Jobs</h3>
+                  <ul class="ui-list">
+                    <li>Junior Data Analyst — Amsterdam</li>
+                    <li>Product Intern — Rotterdam</li>
+                    <li>React Dev — Remote EU</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats -->
+      <section class="section-padding" aria-label="Stats">
+        <div class="container stats-grid">
+          <div class="stat-card reveal">
+            <div class="stat-number counter" data-to="1200">0</div>
+            <div class="stat-label">Profiles auto‑generated</div>
+          </div>
+          <div class="stat-card reveal delay-1">
+            <div class="stat-number counter" data-to="320">0</div>
+            <div class="stat-label">Employers browsing</div>
+          </div>
+          <div class="stat-card reveal delay-2">
+            <div class="stat-number counter" data-to="87">0</div>
+            <div class="stat-label">Avg. hours to interview</div>
+          </div>
+          <div class="stat-card reveal delay-3">
+            <div class="stat-number counter" data-to="98">0</div>
+            <div class="stat-label">Match satisfaction %</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Students -->
+      <section id="students" class="section-padding alt" aria-labelledby="students-title">
+        <div class="container">
+          <header class="section-head reveal-up">
+            <h2 id="students-title">For students</h2>
+            <p>Auto‑generate a clean CV, discover visa‑friendly roles, and apply in one click.</p>
+          </header>
+          <div class="features-grid">
+            <article class="feature-card tilt reveal">
+              <h3>Instant CV</h3>
+              <p>We build your resume from your profile in seconds, with modern typography and layout.</p>
+            </article>
+            <article class="feature-card tilt reveal delay-1">
+              <h3>Smart matching</h3>
+              <p>See jobs compatible with your visa and skills. Fewer dead ends, more interviews.</p>
+            </article>
+            <article class="feature-card tilt reveal delay-2">
+              <h3>One‑click apply</h3>
+              <p>Save your profile and apply instantly. Track status in a delightful dashboard.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Employers -->
+      <section id="employers" class="section-padding" aria-labelledby="employers-title">
+        <div class="container">
+          <header class="section-head reveal-up">
+            <h2 id="employers-title">For employers</h2>
+            <p>Browse a vetted pool of students. Free to use; pay nothing to list or hire.</p>
+          </header>
+          <div class="features-grid">
+            <article class="feature-card tilt reveal">
+              <h3>Talent pool</h3>
+              <p>Filter by skills, location, and availability. See auto‑CVs at a glance.</p>
+            </article>
+            <article class="feature-card tilt reveal delay-1">
+              <h3>Post in seconds</h3>
+              <p>Minimal forms, maximum signal. List internships, part‑time, or entry‑level roles.</p>
+            </article>
+            <article class="feature-card tilt reveal delay-2">
+              <h3>Instant outreach</h3>
+              <p>Bookmark candidates and contact directly. Speed is the advantage.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <section class="section-padding alt" aria-label="Testimonials">
+        <div class="container testimonials-grid">
+          <figure class="testimonial reveal">
+            <blockquote>“I applied from my phone and got an interview the next day. The CV generator is magic.”</blockquote>
+            <figcaption>— Lina, MSc Data Science</figcaption>
+          </figure>
+          <figure class="testimonial reveal delay-1">
+            <blockquote>“We posted a role and shortlisted 8 great profiles in under an hour.”</blockquote>
+            <figcaption>— Tim, Hiring Manager</figcaption>
+          </figure>
+          <figure class="testimonial reveal delay-2">
+            <blockquote>“The demo wowed investors. It feels like a real product.”</blockquote>
+            <figcaption>— Founder, ChronoVize</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section id="pricing" class="section-padding" aria-labelledby="pricing-title">
+        <div class="container">
+          <header class="section-head reveal-up">
+            <h2 id="pricing-title">Pricing</h2>
+            <p>Aligned incentives. Students pay only on success. Employers are free.</p>
+          </header>
+          <div class="pricing-grid">
+            <div class="price-card reveal tilt">
+              <h3>Students</h3>
+              <div class="price">30% of salary<br/><small>for the first 3 months after hire</small></div>
+              <ul class="price-features">
+                <li>Auto‑generated CV</li>
+                <li>Smart job matching</li>
+                <li>Application tracking</li>
+              </ul>
+              <a class="btn btn-gradient magnetic" href="auth/login.html">Start demo</a>
+            </div>
+            <div class="price-card reveal tilt delay-1">
+              <h3>Employers</h3>
+              <div class="price">FREE</div>
+              <ul class="price-features">
+                <li>Unlimited job posts</li>
+                <li>Browse student pool</li>
+                <li>Shortlist & contact</li>
+              </ul>
+              <a class="btn btn-outline magnetic" href="auth/login.html">Browse demo</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" class="section-padding alt" aria-labelledby="faq-title">
+        <div class="container">
+          <header class="section-head reveal-up">
+            <h2 id="faq-title">FAQ</h2>
+            <p>Quick answers to common questions.</p>
+          </header>
+          <div class="faq-list">
+            <details class="reveal">
+              <summary>Is this a real product?</summary>
+              <p>This site is a fully front‑end demo. Dashboards run on mocked APIs to simulate a live product.</p>
+            </details>
+            <details class="reveal delay-1">
+              <summary>Do I need a backend?</summary>
+              <p>No. Start the local server and everything runs client‑side. See README for details.</p>
+            </details>
+            <details class="reveal delay-2">
+              <summary>How do I try the dashboards?</summary>
+              <p>Click Login and use the built‑in demo accounts. You’ll be redirected to a student or employer dashboard.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta-band section-padding">
+        <div class="container reveal-up">
+          <div class="cta-inner">
+            <h2>Ready to wow your audience?</h2>
+            <p>Open the demo, scan the QR, and let them explore alongside you.</p>
+            <div class="cta-actions">
+              <a class="btn btn-gradient magnetic" href="auth/login.html">Launch demo</a>
+              <button class="btn btn-ghost magnetic" id="openQRBottom">Share QR</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div class="brand-col">
+          <img src="assets/logo.svg" alt="ChronoVize" width="28" height="28" /> ChronoVize
+          <p class="muted">Front‑end demo. No backend required.</p>
+        </div>
+        <nav aria-label="Footer">
+          <a href="#students">Students</a>
+          <a href="#employers">Employers</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <div class="footer-actions">
+          <a class="btn btn-small btn-outline" href="auth/login.html">Login</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- QR Share Modal -->
+    <div class="modal" id="qrModal" aria-hidden="true" role="dialog" aria-label="Share QR">
+      <div class="modal-backdrop" data-close-modal></div>
+      <div class="modal-content glass" role="document">
+        <button class="modal-close" data-close-modal aria-label="Close">×</button>
+        <h3>Scan to open this page</h3>
+        <img id="qrImage" alt="QR code to this page" width="220" height="220" />
+        <p class="muted">Tip: perfect for live demos on phones.</p>
+      </div>
+    </div>
+
+    <script src="js/animations.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/demo-auth.js"></script>
+  </body>
+  </html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ChronoVize — Student Dashboard (Demo)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+  </head>
+  <body>
+    <header class="dash-header">
+      <div class="container inner">
+        <a href="../index.html" class="dash-brand"><img src="../assets/logo.svg" width="24" height="24" alt=""/> ChronoVize</a>
+        <div></div>
+        <div class="user-pill">
+          <span class="avatar" id="userAvatar"></span>
+          <span id="userName">User</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="dashboard-grid container">
+      <aside class="sidebar">
+        <nav>
+          <ul class="side-nav">
+            <li><a href="#" data-nav="overview" aria-current="page"><span class="label">Overview</span></a></li>
+            <li><a href="#" data-nav="profile"><span class="label">Profile</span></a></li>
+            <li><a href="#" data-nav="jobs"><span class="label">Browse Jobs</span></a></li>
+            <li><a href="#" data-nav="applications"><span class="label">My Applications</span></a></li>
+          </ul>
+        </nav>
+      </aside>
+      <main class="dash-main">
+        <section class="dash-section active" data-section="overview" aria-labelledby="overview-head">
+          <h2 id="overview-head" tabindex="-1">Overview</h2>
+          <div class="cards">
+            <div class="card span-4"><div class="muted">Profile views</div><div id="statViews" style="font-size:28px;font-weight:800;">—</div></div>
+            <div class="card span-4"><div class="muted">Matches</div><div id="statMatches" style="font-size:28px;font-weight:800;">—</div></div>
+            <div class="card span-4"><div class="muted">Interviews</div><div id="statInterviews" style="font-size:28px;font-weight:800;">—</div></div>
+            <div class="card span-12"><div class="muted">Recent activity</div>
+              <div id="activity" class="list"></div>
+            </div>
+          </div>
+        </section>
+        <section class="dash-section" data-section="profile" aria-labelledby="profile-head">
+          <h2 id="profile-head" tabindex="-1">Profile</h2>
+          <div class="cards">
+            <div class="card span-8">
+              <h3 id="profileName">—</h3>
+              <p id="profileSummary" class="muted">—</p>
+              <div class="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div><div class="muted">Education</div><div id="profileEdu">—</div></div>
+                <div><div class="muted">Visa</div><div id="profileVisa">—</div></div>
+                <div style="grid-column:1/-1"><div class="muted">Skills</div><div id="profileSkills">—</div></div>
+              </div>
+            </div>
+            <div class="card span-4">
+              <h3>Resume</h3>
+              <p class="muted">Export a clean CV from your profile.</p>
+              <button class="btn btn-gradient" disabled title="Coming soon">Download PDF</button>
+            </div>
+          </div>
+        </section>
+        <section class="dash-section" data-section="jobs" aria-labelledby="jobs-head">
+          <h2 id="jobs-head" tabindex="-1">Browse jobs</h2>
+          <ul id="jobsList" class="list" style="list-style:none;padding:0;margin:0;"></ul>
+        </section>
+        <section class="dash-section" data-section="applications" aria-labelledby="applications-head">
+          <h2 id="applications-head" tabindex="-1">My applications</h2>
+          <div id="appsList" class="list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../js/dashboard-common.js"></script>
+    <script src="../js/student-dashboard.js"></script>
+    <script>
+      // render recent activity after stats load
+      (async function(){
+        try{
+          const acts = await apiRequest('/api/students/recent-activity');
+          const list = document.getElementById('activity');
+          list.innerHTML='';
+          acts.forEach(a=>{
+            const row = document.createElement('div'); row.className='list-item';
+            row.innerHTML = `<div>${a.text}</div><div class="muted">${new Date(a.at).toLocaleString()}</div>`;
+            list.appendChild(row);
+          })
+        }catch{}
+      })();
+    </script>
+  </body>
+  </html>

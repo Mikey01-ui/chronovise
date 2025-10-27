@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ChronoVize — Demo Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      .login-wrap { min-height: 100dvh; display: grid; place-items: center; padding: 28px 12px; }
+      .login-card { width: min(520px, 92vw); background: var(--surface); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 20px; box-shadow: var(--shadow-1); }
+      .login-card header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+      .field { display: grid; gap: 6px; margin: 10px 0; }
+      .field input, .field select { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 12px; padding: 12px; color: #fff; }
+      .row { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+      .demo-list { margin-top: 10px; display: grid; gap: 8px; max-height: 220px; overflow: auto; border-top: 1px dashed rgba(255,255,255,.12); padding-top: 10px; }
+      .demo-item { display:flex; justify-content: space-between; align-items:center; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 10px; }
+      .demo-item button { white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <main class="login-wrap">
+      <section class="login-card">
+        <header>
+          <img src="../assets/logo.svg" alt="ChronoVize" width="28" height="28" />
+          <h1 style="margin:0">Demo login</h1>
+        </header>
+        <p class="muted">Pick a demo account or use the form. Password for all demo accounts: <code>demo123</code>.</p>
+
+        <form id="loginForm">
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="student1@demo.cv" required />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" value="demo123" required />
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn btn-gradient" type="submit">Login</button>
+            <a class="btn btn-outline" href="../index.html">Back</a>
+          </div>
+        </form>
+
+        <hr style="border-color: rgba(255,255,255,.08); margin: 16px 0" />
+
+        <div class="row">
+          <div class="field" style="flex: 1 1 220px; min-width:220px;">
+            <label for="type">Use random demo account</label>
+            <div class="row">
+              <select id="type">
+                <option value="any">Any</option>
+                <option value="student">Student</option>
+                <option value="employer">Employer</option>
+              </select>
+              <button id="randomBtn" class="btn btn-outline" type="button">Use random</button>
+            </div>
+          </div>
+          <div>
+            <button id="toggleList" class="btn btn-ghost" type="button">Show demo accounts</button>
+          </div>
+        </div>
+
+        <div id="demoList" class="demo-list" hidden></div>
+      </section>
+    </main>
+    <script src="../js/demo-auth.js"></script>
+    <script>
+      const f = document.getElementById('loginForm');
+      f.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const email = f.email.value.trim();
+        const password = f.password.value;
+        try { await window.demoLogin(email, password); } catch (err){ alert(err.message || 'Login failed'); }
+      });
+      document.getElementById('randomBtn').addEventListener('click', ()=>{
+        const type = document.getElementById('type').value;
+        window.useRandomDemoAccount(type);
+      });
+      const btnList = document.getElementById('toggleList');
+      const list = document.getElementById('demoList');
+      btnList.addEventListener('click', ()=>{
+        const show = list.hasAttribute('hidden');
+        if(show){
+          list.removeAttribute('hidden'); btnList.textContent='Hide demo accounts';
+          list.innerHTML = '';
+          (window.demoAccounts||[]).forEach(a=>{
+            const row = document.createElement('div'); row.className='demo-item';
+            row.innerHTML = `<div><strong>${a.name}</strong> — <span class="muted">${a.email}</span></div>`;
+            const b = document.createElement('button'); b.className='btn btn-small btn-outline'; b.textContent='Use';
+            b.addEventListener('click', ()=> window.demoLogin(a.email, 'demo123'));
+            row.appendChild(b); list.appendChild(row);
+          });
+        } else { list.setAttribute('hidden',''); btnList.textContent='Show demo accounts'; }
+      });
+    </script>
+  </body>
+  </html>
