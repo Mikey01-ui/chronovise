@@ -34,9 +34,8 @@
   if(!user) throw new Error('User not found in demo accounts');
   if(password !== DEMO_PASSWORD) throw new Error('Invalid demo password');
   saveUser(user);
-  // Ensure sessionStorage is set before redirect
-  await delay(400); // increased delay to allow sessionStorage to persist reliably
-  const target = user.type === 'student' ? '../dashboard/student.html' : '../dashboard/employer.html';
+  // Pass justLoggedIn flag to dashboard for robust session detection
+  const target = user.type === 'student' ? '../dashboard/student.html?justLoggedIn=1' : '../dashboard/employer.html?justLoggedIn=1';
   location.href = target;
   return user;
   }

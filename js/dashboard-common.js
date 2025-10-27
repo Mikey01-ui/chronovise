@@ -31,7 +31,16 @@
     constructor(){ this.user = null; this.currentSection = null; }
 
     async init(){
-      this.user = await getCurrentUser();
+      // Robust session detection: retry if justLoggedIn flag is present
+      const urlParams = new URLSearchParams(window.location.search);
+      let retries = urlParams.has('justLoggedIn') ? 6 : 1;
+      let user = null;
+      while(retries-- > 0) {
+        user = await getCurrentUser();
+        if(user) break;
+        await new Promise(r=>setTimeout(r, 120));
+      }
+      this.user = user;
       if(!this.user){ location.href = '../auth/login.html'; return; }
       this.bindNav();
       const first = qs('[data-section]');
