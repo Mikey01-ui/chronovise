@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#6a5acd" />
     <title>ChronoVize — Hire Faster. Launch Careers.</title>
     <meta name="description" content="ChronoVize: lightning‑fast student hiring with auto‑generated CVs and a gorgeous, animated demo experience." />
@@ -164,20 +164,44 @@
       </section>
 
       <!-- Testimonials -->
-      <section class="section-padding alt" aria-label="Testimonials">
-        <div class="container testimonials-grid">
-          <figure class="testimonial reveal">
-            <blockquote>“I applied from my phone and got an interview the next day. The CV generator is magic.”</blockquote>
-            <figcaption>— Lina, MSc Data Science</figcaption>
-          </figure>
-          <figure class="testimonial reveal delay-1">
-            <blockquote>“We posted a role and shortlisted 8 great profiles in under an hour.”</blockquote>
-            <figcaption>— Tim, Hiring Manager</figcaption>
-          </figure>
-          <figure class="testimonial reveal delay-2">
-            <blockquote>“The demo wowed investors. It feels like a real product.”</blockquote>
-            <figcaption>— Founder, ChronoVize</figcaption>
-          </figure>
+      <section class="section-padding alt" aria-labelledby="testimonials-title">
+        <div class="container">
+          <header class="section-head reveal-up">
+            <h2 id="testimonials-title">What our users say</h2>
+            <p>Real feedback from students and employers who've experienced ChronoVize.</p>
+          </header>
+          <div class="testimonials-grid">
+            <figure class="testimonial reveal">
+              <div class="testimonial-avatar">
+                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=80&h=80&fit=crop&crop=face&auto=format" alt="Lina" width="60" height="60" />
+              </div>
+              <blockquote>"I applied from my phone and got an interview the next day. The CV generator is magic."</blockquote>
+              <figcaption>
+                <strong>Lina Chen</strong><br>
+                MSc Data Science, University of Amsterdam
+              </figcaption>
+            </figure>
+            <figure class="testimonial reveal delay-1">
+              <div class="testimonial-avatar">
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face&auto=format" alt="Tim" width="60" height="60" />
+              </div>
+              <blockquote>"We posted a role and shortlisted 8 great profiles in under an hour."</blockquote>
+              <figcaption>
+                <strong>Tim Rodriguez</strong><br>
+                Hiring Manager, TechStart BV
+              </figcaption>
+            </figure>
+            <figure class="testimonial reveal delay-2">
+              <div class="testimonial-avatar">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face&auto=format" alt="Marcus" width="60" height="60" />
+              </div>
+              <blockquote>"The demo wowed investors. It feels like a real product."</blockquote>
+              <figcaption>
+                <strong>Marcus Johnson</strong><br>
+                Founder, ChronoVize
+              </figcaption>
+            </figure>
+          </div>
         </div>
       </section>
 
@@ -185,29 +209,74 @@
       <section id="pricing" class="section-padding" aria-labelledby="pricing-title">
         <div class="container">
           <header class="section-head reveal-up">
-            <h2 id="pricing-title">Pricing</h2>
-            <p>Aligned incentives. Students pay only on success. Employers are free.</p>
+            <h2 id="pricing-title">Simple, transparent pricing</h2>
+            <p>Free for students, affordable subscriptions for employers. No hidden fees, no surprise charges.</p>
           </header>
           <div class="pricing-grid">
-            <div class="price-card reveal tilt">
-              <h3>Students</h3>
-              <div class="price">30% of salary<br/><small>for the first 3 months after hire</small></div>
+            <div class="price-card student-card reveal tilt">
+              <div class="price-badge">Most Popular</div>
+              <h3>For Students</h3>
+              <div class="price">FREE<br/><small>Always & forever</small></div>
               <ul class="price-features">
-                <li>Auto‑generated CV</li>
-                <li>Smart job matching</li>
-                <li>Application tracking</li>
+                <li>✓ Auto‑generated professional CV</li>
+                <li>✓ Smart job matching algorithm</li>
+                <li>✓ One‑click applications</li>
+                <li>✓ Application tracking dashboard</li>
+                <li>✓ Visa‑friendly job filtering</li>
+                <li>✓ Interview preparation tips</li>
               </ul>
-              <a class="btn btn-gradient magnetic" href="auth/login.html">Start demo</a>
+              <a class="btn btn-gradient magnetic" href="auth/login.html">Get started free</a>
+              <p class="price-note">No credit card required</p>
             </div>
-            <div class="price-card reveal tilt delay-1">
-              <h3>Employers</h3>
-              <div class="price">FREE</div>
+            
+            <div class="price-card employer-card reveal tilt delay-1">
+              <h3>For Employers</h3>
+              <div class="price">€49<br/><small>per month, per user</small></div>
               <ul class="price-features">
-                <li>Unlimited job posts</li>
-                <li>Browse student pool</li>
-                <li>Shortlist & contact</li>
+                <li>✓ Unlimited job postings</li>
+                <li>✓ Access to verified student pool</li>
+                <li>✓ Advanced candidate filtering</li>
+                <li>✓ Direct messaging with candidates</li>
+                <li>✓ Hiring analytics & insights</li>
+                <li>✓ Priority customer support</li>
               </ul>
-              <a class="btn btn-outline magnetic" href="auth/login.html">Browse demo</a>
+              <a class="btn btn-outline magnetic" href="auth/login.html">Start 14‑day trial</a>
+              <p class="price-note">Cancel anytime, no commitment</p>
+            </div>
+            
+            <div class="price-card enterprise-card reveal tilt delay-2">
+              <h3>Enterprise</h3>
+              <div class="price">Custom<br/><small>tailored to your needs</small></div>
+              <ul class="price-features">
+                <li>✓ Everything in Standard plan</li>
+                <li>✓ Custom integrations & API access</li>
+                <li>✓ Dedicated account manager</li>
+                <li>✓ Advanced security & compliance</li>
+                <li>✓ Custom branding options</li>
+                <li>✓ Volume discounts available</li>
+              </ul>
+              <a class="btn btn-ghost magnetic" href="mailto:sales@chronovize.com">Contact sales</a>
+              <p class="price-note">Perfect for large organizations</p>
+            </div>
+          </div>
+          
+          <div class="pricing-trust reveal-up">
+            <div class="trust-badges">
+              <div class="trust-item">
+                <span class="trust-icon">🔒</span>
+                <strong>Secure & Compliant</strong>
+                <p>GDPR compliant with enterprise-grade security</p>
+              </div>
+              <div class="trust-item">
+                <span class="trust-icon">💳</span>
+                <strong>No Hidden Fees</strong>
+                <p>Transparent pricing with no setup or cancellation fees</p>
+              </div>
+              <div class="trust-item">
+                <span class="trust-icon">🚀</span>
+                <strong>14‑Day Free Trial</strong>
+                <p>Try all features risk-free, no credit card required</p>
+              </div>
             </div>
           </div>
         </div>
@@ -233,20 +302,6 @@
               <summary>How do I try the dashboards?</summary>
               <p>Click Login and use the built‑in demo accounts. You’ll be redirected to a student or employer dashboard.</p>
             </details>
-          </div>
-        </div>
-      </section>
-
-      <!-- CTA -->
-      <section class="cta-band section-padding">
-        <div class="container reveal-up">
-          <div class="cta-inner">
-            <h2>Ready to wow your audience?</h2>
-            <p>Open the demo, scan the QR, and let them explore alongside you.</p>
-            <div class="cta-actions">
-              <a class="btn btn-gradient magnetic" href="auth/login.html">Launch demo</a>
-              <button class="btn btn-ghost magnetic" id="openQRBottom">Share QR</button>
-            </div>
           </div>
         </div>
       </section>
