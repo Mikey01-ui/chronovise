@@ -11,6 +11,22 @@
     qs('#profileVisa').textContent = p.visa;
     qs('#profileSkills').textContent = (p.skills||[]).join(', ');
     qs('#profileSummary').textContent = p.summary;
+    // Enable CV download
+    const cvBtn = qs('button[download-cv]');
+    if(cvBtn){
+      cvBtn.disabled = false;
+      cvBtn.onclick = function(){
+        const cvText = `CV for ${p.name}\n\nEducation: ${p.education}\nVisa: ${p.visa}\nSkills: ${(p.skills||[]).join(', ')}\nLocation: ${p.location||''}\nSummary: ${p.summary}`;
+        const blob = new Blob([cvText], {type:'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${p.name.replace(/\s+/g,'_')}_CV.txt`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+      };
+    }
   }
 
   async function loadStats(){

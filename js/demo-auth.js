@@ -20,8 +20,54 @@
     };
   }
 
-  const students = Array.from({length: 16}, (_,i)=> seed('Student', i+1));
-  const employers = Array.from({length: 12}, (_,i)=> seed('Employer', i+1));
+  // Generate a lot of demo students and employers with more realistic data
+  const studentNames = [
+    'Alice Johnson','Bob Smith','Charlie Lee','Diana Patel','Ethan Brown','Fiona Garcia','George Kim','Hannah Chen','Ivan Martinez','Julia Clark',
+    'Kevin Turner','Lily Adams','Mason Wright','Nina Scott','Oscar Evans','Paula Rivera','Quentin Brooks','Rita Foster','Sam Young','Tina Hall',
+    'Uma King','Victor Price','Wendy Bell','Xander Fox','Yara Grant','Zane Hughes','Ava Morgan','Ben Reed','Cleo Shaw','Derek Stone',
+    'Ella Webb','Finn York','Gina Zane','Henry Cole','Isla Dean','Jack Ford','Kara Gill','Liam Hunt','Mia Irwin','Noah James',
+    'Olivia Kent','Peter Lane','Queen Moss','Ryan Nash','Sara Owen','Tom Park','Ursula Quinn','Vera Ross','Will Sims','Zoe Tate'
+  ];
+  const employerNames = [
+    'Acme Corp','Brightify','DataFlow','NovaBits','TechNest','GreenLeaf','BlueSky','RedStone','CloudNine','PeakLogic',
+    'Sunrise Ltd','NextGen','PrimeWorks','UrbanEdge','SkyBridge','CoreFusion','SmartPath','Visionary','QuantumLeap','FutureSoft',
+    'Hyperion','OmniTech','PulsePoint','Vertex','Zenith','Apex','Momentum','Synergy','Elemental','Infinity'
+  ];
+  function seedStudent(name, i){
+    const rand = (min, max) => Math.floor(min + Math.random()*(max-min+1));
+    const skillsPool = ['Python','SQL','Excel','React','Node','Figma','Tableau','Java','C++','R','Next.js','TypeScript','PowerBI','Django','Flask','Vue','Angular','SAS','SPSS','Ruby'];
+    const skills = Array.from({length: 5}, ()=> skillsPool[rand(0, skillsPool.length-1)]);
+    return {
+      id: `student_${i}`,
+      type: 'student',
+      email: `student${i}@demo.cv`,
+      name,
+      education: `MSc Program ${1 + (i%4)}`,
+      visa: ['NL','DE','FR','BE','IT','ES','SE','FI'][i%8],
+      skills,
+      avatarColor: ['#7c3aed','#4f46e5','#22d3ee','#10b981','#f59e42','#e11d48','#6366f1','#14b8a6'][i%8],
+      summary: `Motivated student with experience in ${skills.slice(0,2).join(' and ')}. Passionate about data and product.`,
+      location: ['Amsterdam','Rotterdam','Berlin','Paris','Brussels','Madrid','Stockholm','Helsinki'][i%8],
+      company: undefined
+    };
+  }
+  function seedEmployer(name, i){
+    return {
+      id: `employer_${i}`,
+      type: 'employer',
+      email: `employer${i}@demo.cv`,
+      name,
+      company: name,
+      avatarColor: ['#7c3aed','#4f46e5','#22d3ee','#10b981','#f59e42','#e11d48','#6366f1','#14b8a6'][i%8],
+      education: undefined,
+      visa: undefined,
+      skills: undefined,
+      summary: `Employer in ${name}, seeking top student talent for internships and entry roles.`,
+      location: ['Amsterdam','Rotterdam','Berlin','Paris','Brussels','Madrid','Stockholm','Helsinki'][i%8]
+    };
+  }
+  const students = studentNames.map((n,i)=> seedStudent(n,i+1));
+  const employers = employerNames.map((n,i)=> seedEmployer(n,i+1));
   const accounts = [...students, ...employers];
 
   function saveUser(u){ localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
