@@ -47,6 +47,9 @@
         <div class="row" style="margin-top:24px;">
           <button id="randomLoginBtn" class="btn btn-gradient" type="button" style="width:100%;font-size:1.1em;">Login as random demo user</button>
         </div>
+        <div style="margin-top:18px;text-align:center;">
+          <a href="../dashboard/all-students.html" class="btn btn-outline" style="width:100%;font-size:1.05em;">View All Demo Students</a>
+        </div>
       </section>
     </main>
     <script src="../js/demo-auth.js"></script>
@@ -59,8 +62,8 @@
         try { await window.demoLogin(email, password); } catch (err){ alert(err.message || 'Login failed'); }
       });
       document.getElementById('randomLoginBtn').addEventListener('click', ()=>{
-        const accounts = window.demoAccounts || [];
-        if(accounts.length === 0) return alert('No demo accounts available');
+        const accounts = (window.demoAccounts || []).filter(a => a.type === 'student');
+        if(accounts.length === 0) return alert('No demo student accounts available');
         const choice = accounts[Math.floor(Math.random()*accounts.length)];
         window.demoLogin(choice.email, 'demo123');
       });

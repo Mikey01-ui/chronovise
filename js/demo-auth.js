@@ -21,54 +21,99 @@
   }
 
   // Generate a lot of demo students and employers with more realistic data
-  const studentNames = [
-    'Alice Johnson','Bob Smith','Charlie Lee','Diana Patel','Ethan Brown','Fiona Garcia','George Kim','Hannah Chen','Ivan Martinez','Julia Clark',
-    'Kevin Turner','Lily Adams','Mason Wright','Nina Scott','Oscar Evans','Paula Rivera','Quentin Brooks','Rita Foster','Sam Young','Tina Hall',
-    'Uma King','Victor Price','Wendy Bell','Xander Fox','Yara Grant','Zane Hughes','Ava Morgan','Ben Reed','Cleo Shaw','Derek Stone',
-    'Ella Webb','Finn York','Gina Zane','Henry Cole','Isla Dean','Jack Ford','Kara Gill','Liam Hunt','Mia Irwin','Noah James',
-    'Olivia Kent','Peter Lane','Queen Moss','Ryan Nash','Sara Owen','Tom Park','Ursula Quinn','Vera Ross','Will Sims','Zoe Tate'
-  ];
-  const employerNames = [
-    'Acme Corp','Brightify','DataFlow','NovaBits','TechNest','GreenLeaf','BlueSky','RedStone','CloudNine','PeakLogic',
-    'Sunrise Ltd','NextGen','PrimeWorks','UrbanEdge','SkyBridge','CoreFusion','SmartPath','Visionary','QuantumLeap','FutureSoft',
-    'Hyperion','OmniTech','PulsePoint','Vertex','Zenith','Apex','Momentum','Synergy','Elemental','Infinity'
-  ];
-  function seedStudent(name, i){
-    const rand = (min, max) => Math.floor(min + Math.random()*(max-min+1));
-    const skillsPool = ['Python','SQL','Excel','React','Node','Figma','Tableau','Java','C++','R','Next.js','TypeScript','PowerBI','Django','Flask','Vue','Angular','SAS','SPSS','Ruby'];
-    const skills = Array.from({length: 5}, ()=> skillsPool[rand(0, skillsPool.length-1)]);
-    return {
-      id: `student_${i}`,
+  // 3 demo students with rich information
+  const students = [
+    {
+      id: 'student_1',
       type: 'student',
-      email: `student${i}@demo.cv`,
-      name,
-      education: `MSc Program ${1 + (i%4)}`,
-      visa: ['NL','DE','FR','BE','IT','ES','SE','FI'][i%8],
-      skills,
-      avatarColor: ['#7c3aed','#4f46e5','#22d3ee','#10b981','#f59e42','#e11d48','#6366f1','#14b8a6'][i%8],
-      summary: `Motivated student with experience in ${skills.slice(0,2).join(' and ')}. Passionate about data and product.`,
-      location: ['Amsterdam','Rotterdam','Berlin','Paris','Brussels','Madrid','Stockholm','Helsinki'][i%8],
-      company: undefined
-    };
-  }
-  function seedEmployer(name, i){
-    return {
-      id: `employer_${i}`,
+      email: 'alice.johnson@demo.cv',
+      name: 'Alice Johnson',
+      education: 'MSc Data Science, TU Delft',
+      visa: 'NL',
+      skills: ['Python', 'SQL', 'Machine Learning', 'TensorFlow', 'Data Visualization', 'Docker'],
+      avatarColor: '#7c3aed',
+      summary: 'Alice is a passionate data scientist with experience in predictive modeling, deep learning, and cloud deployment. She has interned at Philips and contributed to open-source ML libraries.',
+      location: 'Amsterdam',
+      company: undefined,
+      github: 'alicejohnson',
+      linkedin: 'alice-johnson-ds',
+      languages: ['English', 'Dutch'],
+      awards: ['Best Thesis Award 2024', 'Kaggle Silver Medalist'],
+      interests: ['AI Ethics', 'Robotics', 'Travel']
+    },
+    {
+      id: 'student_2',
+      type: 'student',
+      email: 'bob.smith@demo.cv',
+      name: 'Bob Smith',
+      education: 'MSc Computer Science, ETH Zurich',
+      visa: 'CH',
+      skills: ['Java', 'Spring Boot', 'React', 'AWS', 'Microservices', 'Kubernetes'],
+      avatarColor: '#22d3ee',
+      summary: 'Bob is a full-stack developer with a focus on scalable web applications and cloud infrastructure. He has worked at Google Zurich and built several open-source tools for DevOps.',
+      location: 'Zurich',
+      company: undefined,
+      github: 'bobsmith',
+      linkedin: 'bob-smith-dev',
+      languages: ['English', 'German'],
+      awards: ['ETH Hackathon Winner', 'AWS Certified Developer'],
+      interests: ['Cycling', 'Open Source', 'Cloud Computing']
+    },
+    {
+      id: 'student_3',
+      type: 'student',
+      email: 'hannah.chen@demo.cv',
+      name: 'Hannah Chen',
+      education: 'MSc Artificial Intelligence, University of Paris',
+      visa: 'FR',
+      skills: ['NLP', 'PyTorch', 'French', 'Deep Learning', 'Data Engineering', 'APIs'],
+      avatarColor: '#f59e42',
+      summary: 'Hannah specializes in natural language processing and multilingual AI systems. She has published research on sentiment analysis and built chatbots for French startups.',
+      location: 'Paris',
+      company: undefined,
+      github: 'hannahchen',
+      linkedin: 'hannah-chen-ai',
+      languages: ['English', 'French', 'Mandarin'],
+      awards: ['AI Research Grant 2025', 'Startup Demo Day Winner'],
+      interests: ['Poetry', 'Startups', 'Language Learning']
+    }
+  ];
+  // Keep a few demo employers for completeness
+  const employers = [
+    {
+      id: 'employer_1',
       type: 'employer',
-      email: `employer${i}@demo.cv`,
-      name,
-      company: name,
-      avatarColor: ['#7c3aed','#4f46e5','#22d3ee','#10b981','#f59e42','#e11d48','#6366f1','#14b8a6'][i%8],
-      education: undefined,
-      visa: undefined,
-      skills: undefined,
-      summary: `Employer in ${name}, seeking top student talent for internships and entry roles.`,
-      location: ['Amsterdam','Rotterdam','Berlin','Paris','Brussels','Madrid','Stockholm','Helsinki'][i%8]
-    };
-  }
-  const students = studentNames.map((n,i)=> seedStudent(n,i+1));
-  const employers = employerNames.map((n,i)=> seedEmployer(n,i+1));
+      email: 'hr@brighttech.cv',
+      name: 'BrightTech',
+      company: 'BrightTech',
+      avatarColor: '#4f46e5',
+      summary: 'BrightTech is a leading AI startup in Amsterdam, hiring for data science and engineering roles.',
+      location: 'Amsterdam'
+    },
+    {
+      id: 'employer_2',
+      type: 'employer',
+      email: 'talent@cloudnine.cv',
+      name: 'CloudNine',
+      company: 'CloudNine',
+      avatarColor: '#10b981',
+      summary: 'CloudNine builds cloud infrastructure and is looking for DevOps and backend engineers.',
+      location: 'Zurich'
+    }
+  ];
   const accounts = [...students, ...employers];
+
+  // Helper: generate a simple SVG avatar data URI with initials and background color
+  function makeAvatar(name, color){
+    try{
+      const initials = (name||'').split(' ').map(n=>n[0]||'').slice(0,2).join('').toUpperCase() || '?';
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><rect width='100%' height='100%' fill='${color}'/><text x='50%' y='50%' dy='.08em' text-anchor='middle' fill='white' font-family='Inter, Helvetica, Arial, sans-serif' font-size='96' font-weight='700'>${initials}</text></svg>`;
+      return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    }catch(e){ return null; }
+  }
+
+  // Attach generated photo URIs to demo accounts so profile images display when loaded directly
+  accounts.forEach(a=>{ a.photo = makeAvatar(a.name, a.avatarColor || '#666'); });
 
   function saveUser(u){ localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
   function getUser(){ const raw = localStorage.getItem(STORAGE_KEY); try{ return raw? JSON.parse(raw): null;}catch{ return null; } }
@@ -79,6 +124,8 @@
   const user = accounts.find(a=> a.email.toLowerCase() === String(email).toLowerCase());
   if(!user) throw new Error('User not found in demo accounts');
   if(password !== DEMO_PASSWORD) throw new Error('Invalid demo password');
+  // Persist the demo user to localStorage so mock API calls see the authenticated user
+  try{ saveUser(user); }catch(e){}
   // Encode user info in URL for dashboard
   const userParam = encodeURIComponent(btoa(JSON.stringify(user)));
   const target = user.type === 'student'
@@ -98,12 +145,6 @@
 
   // Mock API layer
   async function mockApi(endpoint, options={}){
-    if(endpoint.includes('/api/students/all')){
-      return { ok:true, status:200, data: students };
-    }
-    if(endpoint.includes('/api/employers/all')){
-      return { ok:true, status:200, data: employers };
-    }
     await delay(220 + Math.random()*180);
     const user = getUser();
     if(endpoint.includes('/api/auth/me')){
@@ -112,14 +153,33 @@
     }
     if(endpoint.includes('/api/students/profile')){
       if(!user || user.type !== 'student') return { ok: false, status: 403, message: 'Forbidden' };
+      // Return all available fields from the demo student object
       return { ok:true, status:200, data: {
-        name: user.name, education: user.education, visa: user.visa, skills: user.skills,
-        photo: null, location: 'Amsterdam, NL', summary: 'Curious, fast‑learning student passionate about data and product.'
+        name: user.name,
+        education: user.education,
+        visa: user.visa,
+        skills: user.skills,
+        photo: null,
+        location: user.location,
+        summary: user.summary,
+        github: user.github,
+        linkedin: user.linkedin,
+        languages: user.languages,
+        awards: user.awards,
+        interests: user.interests
       }};
     }
     if(endpoint.includes('/api/students/statistics')){
       if(!user || user.type !== 'student') return { ok: false, status: 403 };
-      return { ok:true, status:200, data: { views: 120 + Math.floor(Math.random()*200), matches: 8 + Math.floor(Math.random()*9), interviews: 1 + Math.floor(Math.random()*5) } };
+      // Provide richer demo statistics for the overview
+      return { ok:true, status:200, data: {
+        views: 120 + Math.floor(Math.random()*200),
+        matches: 8 + Math.floor(Math.random()*9),
+        interviews: 1 + Math.floor(Math.random()*5),
+        applications: 1 + Math.floor(Math.random()*6),
+        profileCompleteness: 70 + Math.floor(Math.random()*30),
+        messages: Math.floor(Math.random()*5)
+      } };
     }
     if(endpoint.includes('/api/students/recent-activity')){
       if(!user || user.type !== 'student') return { ok: false, status: 403 };

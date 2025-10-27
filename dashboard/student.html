@@ -38,6 +38,16 @@
             <div class="card span-4"><div class="muted">Profile views</div><div id="statViews" style="font-size:28px;font-weight:800;">—</div></div>
             <div class="card span-4"><div class="muted">Matches</div><div id="statMatches" style="font-size:28px;font-weight:800;">—</div></div>
             <div class="card span-4"><div class="muted">Interviews</div><div id="statInterviews" style="font-size:28px;font-weight:800;">—</div></div>
+            <div class="card span-4"><div class="muted">Applications</div><div id="statApplications" style="font-size:28px;font-weight:800;">—</div></div>
+            <div class="card span-4"><div class="muted">Profile completeness</div><div id="statCompleteness" style="font-size:28px;font-weight:800;">—</div></div>
+            <div class="card span-4"><div class="muted">Messages</div><div id="statMessages" style="font-size:28px;font-weight:800;">—</div></div>
+            <div class="card span-4"><div class="muted">Top skill</div><div id="statTopSkill" style="font-size:18px;font-weight:700;">—</div></div>
+            <div class="card span-12" style="padding:14px;min-height:220px;">
+              <div class="muted">Profile activity (summary)</div>
+              <div style="height:220px;margin-top:12px;">
+                <canvas id="overviewChart" style="width:100%;height:100%;display:block;"></canvas>
+              </div>
+            </div>
             <div class="card span-12"><div class="muted">Recent activity</div>
               <div id="activity" class="list"></div>
             </div>
@@ -72,13 +82,19 @@
         </section>
         <section class="dash-section" data-section="all-students" aria-labelledby="all-students-head">
           <h2 id="all-students-head" tabindex="-1">All Demo Students</h2>
-          <div id="allStudentsList" class="list"></div>
+          <div id="allStudentsList" class="student-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;"></div>
         </section>
       </main>
     </div>
 
-    <script src="../js/dashboard-common.js"></script>
-    <script src="../js/student-dashboard.js"></script>
+  <script src="../js/demo-auth.js"></script>
+  <!-- PDF export libs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Chart for overview sparkline -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="../js/dashboard-common.js"></script>
+  <script src="../js/student-dashboard.js"></script>
     <script>
       // render recent activity after stats load
       (async function(){

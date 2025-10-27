@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>All Demo Students — ChronoVize</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <style>
+    .student-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; margin-top: 32px; }
+    .student-card { background: var(--surface); border-radius: 18px; box-shadow: var(--shadow-1); padding: 24px; display: flex; gap: 24px; align-items: flex-start; }
+    .avatar { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2em; color: #fff; font-weight: 700; flex-shrink: 0; }
+    .info { flex: 1; }
+    .info h2 { margin: 0 0 8px 0; font-size: 1.3em; }
+    .badges { margin-bottom: 8px; }
+    .badge { display: inline-block; background: var(--primary); color: #fff; border-radius: 8px; padding: 2px 10px; margin-right: 6px; font-size: 0.95em; }
+    .muted { color: #b3b3b3; }
+    .links { margin-top: 8px; }
+    .links a { color: var(--accent); margin-right: 12px; text-decoration: none; }
+    .section-title { font-size: 1.5em; margin-top: 24px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <header class="dash-header">
+    <div class="container inner">
+      <a href="../index.html" class="dash-brand"><img src="../assets/logo.svg" width="24" height="24" alt=""/> ChronoVize</a>
+      <div></div>
+      <div class="user-pill">
+        <span class="avatar" style="background:#7c3aed;width:28px;height:28px;font-size:1em;">CV</span>
+        <span>All Demo Students</span>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <div class="section-title">Meet Our Demo Students</div>
+    <div class="student-cards">
+      <!-- Student 1 -->
+      <div class="student-card">
+        <div class="avatar" style="background:#7c3aed;">A</div>
+        <div class="info">
+          <h2>Alice Johnson</h2>
+          <div class="badges">
+            <span class="badge">MSc Data Science, TU Delft</span>
+            <span class="badge">Amsterdam</span>
+            <span class="badge">Visa: NL</span>
+          </div>
+          <div><strong>Skills:</strong> <span class="badge">Python</span> <span class="badge">SQL</span> <span class="badge">Machine Learning</span> <span class="badge">TensorFlow</span> <span class="badge">Data Visualization</span> <span class="badge">Docker</span></div>
+          <div class="muted" style="margin:8px 0;">Alice is a passionate data scientist with experience in predictive modeling, deep learning, and cloud deployment. She has interned at Philips and contributed to open-source ML libraries.</div>
+          <div><strong>Languages:</strong> English, Dutch</div>
+          <div><strong>Awards:</strong> Best Thesis Award 2024, Kaggle Silver Medalist</div>
+          <div><strong>Interests:</strong> AI Ethics, Robotics, Travel</div>
+          <div class="links">
+            <a href="https://github.com/alicejohnson" target="_blank">GitHub</a>
+            <a href="https://linkedin.com/in/alice-johnson-ds" target="_blank">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+      <!-- Student 2 -->
+      <div class="student-card">
+        <div class="avatar" style="background:#22d3ee;">B</div>
+        <div class="info">
+          <h2>Bob Smith</h2>
+          <div class="badges">
+            <span class="badge">MSc Computer Science, ETH Zurich</span>
+            <span class="badge">Zurich</span>
+            <span class="badge">Visa: CH</span>
+          </div>
+          <div><strong>Skills:</strong> <span class="badge">Java</span> <span class="badge">Spring Boot</span> <span class="badge">React</span> <span class="badge">AWS</span> <span class="badge">Microservices</span> <span class="badge">Kubernetes</span></div>
+          <div class="muted" style="margin:8px 0;">Bob is a full-stack developer with a focus on scalable web applications and cloud infrastructure. He has worked at Google Zurich and built several open-source tools for DevOps.</div>
+          <div><strong>Languages:</strong> English, German</div>
+          <div><strong>Awards:</strong> ETH Hackathon Winner, AWS Certified Developer</div>
+          <div><strong>Interests:</strong> Cycling, Open Source, Cloud Computing</div>
+          <div class="links">
+            <a href="https://github.com/bobsmith" target="_blank">GitHub</a>
+            <a href="https://linkedin.com/in/bob-smith-dev" target="_blank">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+      <!-- Student 3 -->
+      <div class="student-card">
+        <div class="avatar" style="background:#f59e42;">H</div>
+        <div class="info">
+          <h2>Hannah Chen</h2>
+          <div class="badges">
+            <span class="badge">MSc Artificial Intelligence, University of Paris</span>
+            <span class="badge">Paris</span>
+            <span class="badge">Visa: FR</span>
+          </div>
+          <div><strong>Skills:</strong> <span class="badge">NLP</span> <span class="badge">PyTorch</span> <span class="badge">French</span> <span class="badge">Deep Learning</span> <span class="badge">Data Engineering</span> <span class="badge">APIs</span></div>
+          <div class="muted" style="margin:8px 0;">Hannah specializes in natural language processing and multilingual AI systems. She has published research on sentiment analysis and built chatbots for French startups.</div>
+          <div><strong>Languages:</strong> English, French, Mandarin</div>
+          <div><strong>Awards:</strong> AI Research Grant 2025, Startup Demo Day Winner</div>
+          <div><strong>Interests:</strong> Poetry, Startups, Language Learning</div>
+          <div class="links">
+            <a href="https://github.com/hannahchen" target="_blank">GitHub</a>
+            <a href="https://linkedin.com/in/hannah-chen-ai" target="_blank">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:32px;text-align:center;">
+      <a href="../auth/login.html" class="btn btn-gradient" style="font-size:1.1em;">Back to Login</a>
+    </div>
+  </main>
+</body>
+</html>

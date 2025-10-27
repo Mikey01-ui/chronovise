@@ -37,6 +37,9 @@
       if(urlParams.has('user')) {
         try {
           user = JSON.parse(atob(decodeURIComponent(urlParams.get('user'))));
+          // If a demo user was passed via URL, persist it to localStorage so the demo mock API
+          // (which reads localStorage) recognizes the authenticated user when the page loads
+          try { localStorage.setItem('user', JSON.stringify(user)); } catch (e) {}
         } catch {}
       }
       // Fallback to API if not in URL

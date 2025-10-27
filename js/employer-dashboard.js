@@ -1,5 +1,6 @@
-  async function loadAllEmployers(){
-    const employers = await apiRequest('/api/employers/all');
+  // Directly use demo data from window.demoAccounts
+  function renderAllEmployers(){
+    const employers = (window.demoAccounts || []).filter(u => u.type === 'employer');
     const list = qs('#allEmployersList');
     if(!list) return;
     list.innerHTML = '';
@@ -68,6 +69,6 @@
     loadJobs();
     loadApplications();
     bindPostForm();
-      loadAllEmployers();
+    renderAllEmployers();
   });
 })();
