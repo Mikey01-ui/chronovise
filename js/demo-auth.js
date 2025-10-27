@@ -29,15 +29,16 @@
   function clearUser(){ sessionStorage.removeItem(STORAGE_KEY); }
 
   async function demoLogin(email, password){
-    await delay(300);
-    const user = accounts.find(a=> a.email.toLowerCase() === String(email).toLowerCase());
-    if(!user) throw new Error('User not found in demo accounts');
-    if(password !== DEMO_PASSWORD) throw new Error('Invalid demo password');
-    saveUser(user);
-    // redirect based on role
-    const target = user.type === 'student' ? '../dashboard/student.html' : '../dashboard/employer.html';
-    location.href = target;
-    return user;
+  await delay(300);
+  const user = accounts.find(a=> a.email.toLowerCase() === String(email).toLowerCase());
+  if(!user) throw new Error('User not found in demo accounts');
+  if(password !== DEMO_PASSWORD) throw new Error('Invalid demo password');
+  saveUser(user);
+  // Ensure sessionStorage is set before redirect
+  await delay(120); // short delay to allow sessionStorage to persist
+  const target = user.type === 'student' ? '../dashboard/student.html' : '../dashboard/employer.html';
+  location.href = target;
+  return user;
   }
 
   function useRandomDemoAccount(type='any'){
