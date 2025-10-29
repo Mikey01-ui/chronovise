@@ -70,5 +70,44 @@
     loadApplications();
     bindPostForm();
     renderAllEmployers();
+    setupEmployerMessaging();
   });
+
+  function setupEmployerMessaging(){
+    const studentSelect = qs('#studentSelect');
+    const loadBtn = qs('#loadConversation');
+    const msgList = qs('#emMessagesList');
+    const msgForm = qs('#emMessageForm');
+    const msgInput = qs('#emMessageInput');
+    if(!studentSelect || !loadBtn) return;
+    // Populate student options
+    const students = (window.demoAccounts || []).filter(a=> a.type==='student');
+    studentSelect.innerHTML = students.map(s=>`<option value="${s.email}">${s.name} — ${s.email}</option>`).join('');
+    function loadConv(){
+      const email = studentSelect.value;
+      const key = 'demoMessages_' + email;
+      let msgs = [];
+      try{ msgs = JSON.parse(localStorage.getItem(key) || '[]'); }catch{}
+      msgList.innerHTML = '';
+      msgs.forEach(m=>{
+        const it = document.createElement('div'); it.className = 'list-item';
+        it.innerHTML = `<div><strong>${m.from}</strong>: ${m.text}</div><div class="muted" style="font-size:12px">${new Date(m.at).toLocaleString()}</div>`;
+        msgList.appendChild(it);
+      });
+      msgList.scrollTop = msgList.scrollHeight;
+    }
+    loadBtn.addEventListener('click', ()=> loadConv());
+    msgForm.addEventListener('submit', e=>{
+      e.preventDefault();
+      const email = studentSelect.value; if(!email) return;
+      const key = 'demoMessages_' + email;
+      let msgs = [];
+      try{ msgs = JSON.parse(localStorage.getItem(key) || '[]'); }catch{}
+      msgs.push({ from: (common.user && common.user.name) || 'Employer', text: msgInput.value.trim(), at: Date.now() });
+      localStorage.setItem(key, JSON.stringify(msgs));
+      msgInput.value = '';
+      loadConv();
+      showNotification('Message sent (demo).','success');
+    });
+  }
 })();

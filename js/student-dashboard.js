@@ -46,8 +46,8 @@ function setupMessages(){
   const messagesList = document.getElementById('messagesList');
   const messageForm = document.getElementById('messageForm');
   const messageInput = document.getElementById('messageInput');
-  // Use localStorage for demo messages
-  const user = (window.dashboardUtils && window.dashboardUtils.getCurrentUser) ? null : (window.DashboardCommon && (new window.DashboardCommon()).user);
+  // Use localStorage for demo messages; keyed by the authenticated student's email
+  const user = window.currentUser || null;
   const key = 'demoMessages_' + (user && user.email ? user.email : 'student');
   function loadMessages(){
     let msgs = [];

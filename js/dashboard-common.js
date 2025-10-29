@@ -45,6 +45,8 @@
       // Fallback to API if not in URL
       if(!user) user = await getCurrentUser();
       this.user = user;
+  // Expose current user globally for demo layers to access (used by messaging)
+  try{ window.currentUser = this.user; }catch(e){}
       if(!this.user){ location.href = '../auth/login.html'; return; }
       this.bindNav();
       const first = qs('[data-section]');

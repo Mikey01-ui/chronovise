@@ -45,6 +45,20 @@
           <h2 id="jobs-head" tabindex="-1">My jobs</h2>
           <div id="eJobsList" class="list"></div>
         </section>
+        <section class="dash-section" data-section="messages" aria-labelledby="messages-head">
+          <h2 id="messages-head" tabindex="-1">Messages</h2>
+          <div class="card span-12" style="min-height:220px;">
+            <div style="display:flex;gap:10px;margin-bottom:10px;align-items:center;">
+              <select id="studentSelect" style="flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:#fff;"></select>
+              <button id="loadConversation" class="btn btn-outline">Open</button>
+            </div>
+            <div id="emMessagesList" class="list" style="max-height:180px;overflow:auto;margin-bottom:12px;"></div>
+            <form id="emMessageForm" style="display:flex;gap:10px;align-items:center;">
+              <input id="emMessageInput" type="text" placeholder="Write a message to the selected student" style="flex:1;padding:10px;border-radius:8px;border:1px solid #222;background:#18181b;color:#fff;" />
+              <button class="btn btn-gradient" type="submit">Send</button>
+            </form>
+          </div>
+        </section>
         <section class="dash-section" data-section="post" aria-labelledby="post-head">
           <h2 id="post-head" tabindex="-1">Post a job</h2>
           <form id="postJobForm" class="card" style="max-width:560px;">
