@@ -55,6 +55,27 @@ function setupMessages(){
   function getAvatarByName(name){
     try{ const acct = (window.demoAccounts||[]).find(a=> a.name === name || a.email === name); if(acct) return acct.photo || acct.avatarColor || ''; }catch{} return '';
   }
+  
+  // Seed demo messages helper (exposed so users can populate if empty)
+  function seedDemoMessagesFor(email){
+    try{
+      if(!email) return;
+      const key = 'demoMessages_' + email;
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      if(existing && existing.length>0) return;
+      const employers = (window.demoAccounts||[]).filter(a=> a.type === 'employer');
+      if(!employers || employers.length===0) return;
+      const user = window.currentUser || { name: 'Student' };
+      const now = Date.now();
+      const samples = [];
+      for(let i=0;i<Math.min(3, employers.length); i++){
+        const e = employers[i];
+        samples.push({ from: e.name, text: `Hi ${user.name.split(' ')[0]}, we saw your profile and think you'd be a great fit for a ${['Data Analyst','ML Engineer','Product Analyst'][i%3]} role.`, at: now - ((i+1)*86400*1000) });
+      }
+      samples.push({ from: user.name, text: `Thanks — I'm interested! Happy to chat.`, at: now - 3600*1000 });
+      localStorage.setItem(key, JSON.stringify(samples));
+    }catch(e){ console.error('seedDemoMessagesFor failed', e); }
+  }
 
   function lastReadKey(convoEmail, viewerEmail){ return `demoLastRead_${convoEmail}|${viewerEmail}`; }
   function getLastRead(convoEmail, viewerEmail){ try{ return parseInt(localStorage.getItem(lastReadKey(convoEmail, viewerEmail))||'0',10); }catch{return 0;} }
@@ -67,6 +88,17 @@ function setupMessages(){
     const me = (window.currentUser && window.currentUser.name) || '';
     const viewerEmail = (window.currentUser && window.currentUser.email) || '';
     const last = getLastRead(conversationEmail, viewerEmail) || 0;
+    // If no messages, show a small placeholder with a button to populate demo messages
+    if((!msgs || msgs.length===0) && typeof seedDemoMessagesFor === 'function'){
+      const placeholder = document.createElement('div'); placeholder.className='card';
+      placeholder.style = 'padding:14px;border-radius:10px;background:rgba(255,255,255,.02);';
+      placeholder.innerHTML = `<div style="margin-bottom:8px;">No messages yet in this conversation.</div>`;
+      const btn = document.createElement('button'); btn.className='btn btn-outline'; btn.textContent='Populate demo messages';
+      btn.onclick = ()=>{ seedDemoMessagesFor(conversationEmail); loadMessages(); updateMessagesBadge(); };
+      placeholder.appendChild(btn);
+      messagesList.appendChild(placeholder);
+      return;
+    }
     msgs.forEach(m=>{
       const isMine = m.from === me;
       const wrapper = document.createElement('div');
