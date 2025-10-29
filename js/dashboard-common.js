@@ -77,8 +77,15 @@
       if(nameEl && this.user) nameEl.textContent = this.user.name || this.user.email;
       if(avatar && this.user){
         // If the demo user has a photo (data URI), show it; otherwise use color background
-        if(this.user.photo){ avatar.innerHTML = `<img src="${this.user.photo}" alt="avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;display:block;" />`; }
-        else { avatar.style.background = this.user.avatarColor || 'linear-gradient(135deg, var(--primary), var(--accent))'; }
+        if(this.user.photo){
+          // clear any background so image is visible
+          avatar.style.background = 'transparent';
+          avatar.style.overflow = 'hidden';
+          avatar.innerHTML = `<img src="${this.user.photo}" alt="avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;display:block;" />`;
+        } else {
+          avatar.innerHTML = '';
+          avatar.style.background = this.user.avatarColor || 'linear-gradient(135deg, var(--primary), var(--accent))';
+        }
       }
     }
   }

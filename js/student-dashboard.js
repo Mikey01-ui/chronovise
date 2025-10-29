@@ -39,7 +39,9 @@
   // Always set profile photo src
   try{
     const img = qs('#profilePhoto');
-    if(img) { img.src = p.photo || ''; img.alt = p.name || 'Profile'; }
+    // prefer profile photo from API, otherwise fall back to the persisted demo user photo
+    const fallbackPhoto = (window.currentUser && window.currentUser.photo) || '';
+    if(img) { img.src = p.photo || fallbackPhoto || ''; img.alt = p.name || 'Profile'; }
   }catch(e){}
 // --- Demo messaging platform ---
 function setupMessages(){
