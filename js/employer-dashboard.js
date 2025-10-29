@@ -83,16 +83,31 @@
     // Populate student options
     const students = (window.demoAccounts || []).filter(a=> a.type==='student');
     studentSelect.innerHTML = students.map(s=>`<option value="${s.email}">${s.name} — ${s.email}</option>`).join('');
+    function getAvatarByName(name){
+      try{ const acct = (window.demoAccounts||[]).find(a=> a.name === name || a.email === name); if(acct) return acct.photo || acct.avatarColor || ''; }catch{} return '';
+    }
     function loadConv(){
       const email = studentSelect.value;
       const key = 'demoMessages_' + email;
       let msgs = [];
       try{ msgs = JSON.parse(localStorage.getItem(key) || '[]'); }catch{}
       msgList.innerHTML = '';
+      const me = (common.user && common.user.name) || '';
       msgs.forEach(m=>{
-        const it = document.createElement('div'); it.className = 'list-item';
-        it.innerHTML = `<div><strong>${m.from}</strong>: ${m.text}</div><div class="muted" style="font-size:12px">${new Date(m.at).toLocaleString()}</div>`;
-        msgList.appendChild(it);
+        const isMine = m.from === me;
+        const wrapper = document.createElement('div'); wrapper.style = `display:flex;gap:10px;margin-bottom:8px;justify-content:${isMine? 'flex-end':'flex-start'};`;
+        const avatarSrc = getAvatarByName(m.from);
+        const bubble = document.createElement('div');
+        bubble.style = `max-width:72%;padding:10px 12px;border-radius:12px;background:${isMine? 'linear-gradient(90deg,#7c3aed,#a78bfa)': 'rgba(255,255,255,0.04)'};color:${isMine? '#fff':'#ddd'};`;
+        bubble.innerHTML = `<div style="font-size:13px;margin-bottom:6px;"><strong style="font-weight:600;">${m.from}</strong></div><div>${m.text}</div><div class="muted" style="font-size:11px;margin-top:6px;">${new Date(m.at).toLocaleString()}</div>`;
+        if(isMine){
+          wrapper.appendChild(bubble);
+          if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); }
+        }else{
+          if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); }
+          wrapper.appendChild(bubble);
+        }
+        msgList.appendChild(wrapper);
       });
       msgList.scrollTop = msgList.scrollHeight;
     }

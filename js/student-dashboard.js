@@ -49,14 +49,37 @@ function setupMessages(){
   // Use localStorage for demo messages; keyed by the authenticated student's email
   const user = window.currentUser || null;
   const key = 'demoMessages_' + (user && user.email ? user.email : 'student');
+  function getAvatarByName(name){
+    try{
+      const acct = (window.demoAccounts||[]).find(a=> a.name === name || a.email === name);
+      if(acct) return acct.photo || acct.avatarColor || '';
+    }catch{}
+    return '';
+  }
+
   function loadMessages(){
     let msgs = [];
     try{ msgs = JSON.parse(localStorage.getItem(key)||'[]'); }catch{}
     messagesList.innerHTML = '';
+    const me = (window.currentUser && window.currentUser.name) || '';
     msgs.forEach(m=>{
-      const row = document.createElement('div'); row.className = 'list-item';
-      row.innerHTML = `<div><strong>${m.from}</strong>: ${m.text}</div><div class="muted" style="font-size:12px;">${new Date(m.at).toLocaleString()}</div>`;
-      messagesList.appendChild(row);
+      const isMine = m.from === me;
+      const wrapper = document.createElement('div');
+      wrapper.style = `display:flex;gap:10px;margin-bottom:8px;justify-content:${isMine? 'flex-end':'flex-start'};`;
+      const avatarSrc = getAvatarByName(m.from);
+      const bubble = document.createElement('div');
+      bubble.style = `max-width:72%;padding:10px 12px;border-radius:12px;background:${isMine? 'linear-gradient(90deg,#7c3aed,#a78bfa)': 'rgba(255,255,255,0.04)'};color:${isMine? '#fff':'#ddd'};`;
+      bubble.innerHTML = `<div style="font-size:13px;margin-bottom:6px;"><strong style="font-weight:600;">${m.from}</strong></div><div>${m.text}</div><div class="muted" style="font-size:11px;margin-top:6px;">${new Date(m.at).toLocaleString()}</div>`;
+      if(isMine){
+        // my message: bubble then avatar
+        wrapper.appendChild(bubble);
+        if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); }
+      }else{
+        // others: avatar then bubble
+        if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); }
+        wrapper.appendChild(bubble);
+      }
+      messagesList.appendChild(wrapper);
     });
     messagesList.scrollTop = messagesList.scrollHeight;
   }
@@ -66,7 +89,8 @@ function setupMessages(){
     if(!text) return;
     let msgs = [];
     try{ msgs = JSON.parse(localStorage.getItem(key)||'[]'); }catch{}
-    msgs.push({ from: 'Employer', text, at: Date.now() });
+    const sender = (window.currentUser && window.currentUser.name) || 'Student';
+    msgs.push({ from: sender, text, at: Date.now() });
     localStorage.setItem(key, JSON.stringify(msgs));
     messageInput.value = '';
     loadMessages();
