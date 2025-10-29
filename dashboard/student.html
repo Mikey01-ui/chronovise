@@ -53,13 +53,18 @@
             </div>
           </div>
         </section>
-        <section class="dash-section" data-section="profile" aria-labelledby="profile-head">
+  <section class="dash-section" data-section="profile" aria-labelledby="profile-head">
           <h2 id="profile-head" tabindex="-1">Profile</h2>
           <div class="cards">
             <div class="card span-8">
-              <h3 id="profileName">—</h3>
-              <p id="profileSummary" class="muted">—</p>
-              <div class="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div style="display:flex;align-items:center;gap:18px;">
+                <img id="profilePhoto" src="" alt="Profile" style="width:80px;height:80px;border-radius:12px;object-fit:cover;box-shadow:0 2px 12px #0002;" />
+                <div>
+                  <h3 id="profileName">—</h3>
+                  <p id="profileSummary" class="muted">—</p>
+                </div>
+              </div>
+              <div class="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
                 <div><div class="muted">Education</div><div id="profileEdu">—</div></div>
                 <div><div class="muted">Visa</div><div id="profileVisa">—</div></div>
                 <div style="grid-column:1/-1"><div class="muted">Skills</div><div id="profileSkills">—</div></div>
@@ -70,6 +75,16 @@
               <p class="muted">Export a clean CV from your profile.</p>
               <button class="btn btn-gradient" disabled download-cv title="Download your CV">Download CV</button>
             </div>
+          </div>
+        </section>
+        <section class="dash-section" data-section="messages" aria-labelledby="messages-head">
+          <h2 id="messages-head" tabindex="-1">Messages</h2>
+          <div class="card span-12" style="min-height:220px;">
+            <div id="messagesList" class="list" style="max-height:180px;overflow-y:auto;margin-bottom:12px;"></div>
+            <form id="messageForm" style="display:flex;gap:10px;align-items:center;">
+              <input id="messageInput" type="text" placeholder="Type a message..." style="flex:1;padding:10px;border-radius:8px;border:1px solid #222;background:#18181b;color:#fff;" />
+              <button class="btn btn-gradient" type="submit">Send</button>
+            </form>
           </div>
         </section>
         <section class="dash-section" data-section="jobs" aria-labelledby="jobs-head">

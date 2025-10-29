@@ -36,18 +36,43 @@
   async function loadProfile(){
     const p = await apiRequest('/api/students/profile');
   // Render profile picture (inject image before name)
+  // Always set profile photo src
   try{
-    const nameEl = qs('#profileName');
-    if(nameEl){
-      // remove existing photo if present
-      const existing = qs('#profilePhoto'); if(existing) existing.remove();
-      const img = document.createElement('img'); img.id = 'profilePhoto';
-      img.src = p.photo || '';
-      img.alt = p.name || 'Profile';
-      img.style = 'width:80px;height:80px;border-radius:12px;object-fit:cover;float:left;margin-right:12px;';
-      nameEl.parentNode.insertBefore(img, nameEl);
-    }
+    const img = qs('#profilePhoto');
+    if(img) { img.src = p.photo || ''; img.alt = p.name || 'Profile'; }
   }catch(e){}
+// --- Demo messaging platform ---
+function setupMessages(){
+  const messagesList = document.getElementById('messagesList');
+  const messageForm = document.getElementById('messageForm');
+  const messageInput = document.getElementById('messageInput');
+  // Use localStorage for demo messages
+  const user = (window.dashboardUtils && window.dashboardUtils.getCurrentUser) ? null : (window.DashboardCommon && (new window.DashboardCommon()).user);
+  const key = 'demoMessages_' + (user && user.email ? user.email : 'student');
+  function loadMessages(){
+    let msgs = [];
+    try{ msgs = JSON.parse(localStorage.getItem(key)||'[]'); }catch{}
+    messagesList.innerHTML = '';
+    msgs.forEach(m=>{
+      const row = document.createElement('div'); row.className = 'list-item';
+      row.innerHTML = `<div><strong>${m.from}</strong>: ${m.text}</div><div class="muted" style="font-size:12px;">${new Date(m.at).toLocaleString()}</div>`;
+      messagesList.appendChild(row);
+    });
+    messagesList.scrollTop = messagesList.scrollHeight;
+  }
+  messageForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const text = messageInput.value.trim();
+    if(!text) return;
+    let msgs = [];
+    try{ msgs = JSON.parse(localStorage.getItem(key)||'[]'); }catch{}
+    msgs.push({ from: 'Employer', text, at: Date.now() });
+    localStorage.setItem(key, JSON.stringify(msgs));
+    messageInput.value = '';
+    loadMessages();
+  });
+  loadMessages();
+}
   qs('#profileName').textContent = p.name;
   qs('#profileEdu').textContent = p.education + (p.location ? `, ${p.location}` : '');
   qs('#profileVisa').textContent = p.visa;
@@ -259,5 +284,6 @@
     loadJobs();
     loadApplications();
     renderAllStudents();
+    setupMessages();
   });
 })();
