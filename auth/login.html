@@ -8,7 +8,10 @@
     <link rel="stylesheet" href="../css/style.css" />
     <style>
       .login-wrap { min-height: 100dvh; display: grid; place-items: center; padding: 28px 12px; }
-      .login-card { width: min(520px, 92vw); background: var(--surface); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 20px; box-shadow: var(--shadow-1); }
+  .login-card { width: min(520px, 92vw); background: var(--surface); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 20px; box-shadow: var(--shadow-1); }
+  /* login transition */
+  body.logging-in::before{ content:''; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index:9998; }
+  body.logging-in .login-card{ transform: scale(0.92) translateY(40px); opacity:0; transition: transform 0.48s cubic-bezier(.7,.2,.2,1), opacity 0.36s; }
       .login-card header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
       .field { display: grid; gap: 6px; margin: 10px 0; }
       .field input, .field select { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 12px; padding: 12px; color: #fff; }
@@ -37,7 +40,7 @@
             <input type="password" id="password" name="password" value="demo123" required />
           </div>
           <div class="row" style="margin-top:10px">
-            <button class="btn btn-gradient" type="submit">Login</button>
+            <button class="btn btn-gradient" type="submit" id="mainLoginBtn">Login</button>
             <a class="btn btn-outline" href="../index.html">Back</a>
           </div>
         </form>
@@ -48,18 +51,10 @@
           <h4 style="margin:8px 0 6px 0">Use random demo account</h4>
           <div class="row" style="align-items:center;">
             <select id="randomType" style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#fff;">
-              <option value="any">Any</option>
               <option value="student">Student</option>
               <option value="employer">Employer</option>
             </select>
-            <button id="showDemoBtn" class="btn btn-outline" type="button" style="margin-left:10px;">Show demo accounts</button>
-          </div>
-          <div style="margin-top:10px;">
-            <button id="useRandomBtn" class="btn btn-gradient" type="button">Use random</button>
-          </div>
-          <div class="demo-list" id="demoList" style="display:none;margin-top:12px;"></div>
-          <div style="margin-top:14px;text-align:center;">
-            <a href="../dashboard/all-students.html" class="btn btn-outline" style="width:100%;font-size:1.05em;">View All Demo Students</a>
+            <button id="useRandomBtn" class="btn btn-gradient" type="button" style="margin-left:10px;">Use random</button>
           </div>
         </div>
       </section>
@@ -73,37 +68,45 @@
         const password = f.password.value;
         try { await window.demoLogin(email, password); } catch (err){ alert(err.message || 'Login failed'); }
       });
-      const demoListEl = document.getElementById('demoList');
-      const showDemoBtn = document.getElementById('showDemoBtn');
       const useRandomBtn = document.getElementById('useRandomBtn');
       const randomType = document.getElementById('randomType');
-
-      function renderDemoList(type='any'){
-        const accounts = (window.demoAccounts || []).filter(a=> type==='any' ? true : a.type===type);
-        demoListEl.innerHTML = '';
-        if(accounts.length===0){ demoListEl.innerHTML = '<div class="muted">No demo accounts available.</div>'; return; }
-        accounts.forEach(a=>{
-          const it = document.createElement('div'); it.className = 'demo-item';
-          it.innerHTML = `<div><strong>${a.name}</strong> <div class="muted" style="font-size:12px">${a.email}</div></div>`;
-          const btn = document.createElement('button'); btn.className = 'btn btn-small btn-outline'; btn.textContent = 'Login';
-          btn.addEventListener('click', ()=> window.demoLogin(a.email, 'demo123'));
-          it.appendChild(btn);
-          demoListEl.appendChild(it);
-        });
-      }
-
-      showDemoBtn.addEventListener('click', ()=>{
-        const t = randomType.value;
-        if(demoListEl.style.display === 'none'){ renderDemoList(t); demoListEl.style.display = 'block'; showDemoBtn.textContent = 'Hide demo accounts'; }
-        else { demoListEl.style.display = 'none'; showDemoBtn.textContent = 'Show demo accounts'; }
-      });
-
       useRandomBtn.addEventListener('click', ()=>{
         const type = randomType.value;
-        const accounts = (window.demoAccounts || []).filter(a=> type==='any' ? true : a.type===type);
+        const accounts = (window.demoAccounts || []).filter(a=> a.type===type);
         if(accounts.length===0) return alert('No demo accounts available for selected type');
         const choice = accounts[Math.floor(Math.random()*accounts.length)];
         window.demoLogin(choice.email, 'demo123');
+      });
+
+      // On main login, ask if user wants to login as student or employer
+      document.getElementById('mainLoginBtn').addEventListener('click', async (e)=>{
+        e.preventDefault();
+        const email = f.email.value.trim();
+        const password = f.password.value;
+        const type = await new Promise(resolve=>{
+          const modal = document.createElement('div');
+          modal.style = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;animation:fadeInModal 0.4s;';
+          modal.innerHTML = `<div style="background:#18181b;padding:32px 28px;border-radius:16px;box-shadow:0 2px 24px #0006;min-width:260px;text-align:center;animation:popInModal 0.4s;">
+            <h3 style="margin-bottom:18px;">Login as:</h3>
+            <button id="modalStudent" class="btn btn-gradient" style="margin:0 8px 0 0;">Student</button>
+            <button id="modalEmployer" class="btn btn-outline" style="margin:0 0 0 8px;">Employer</button>
+          </div>`;
+          const style = document.createElement('style');
+          style.textContent = `@keyframes fadeInModal{from{opacity:0}to{opacity:1}}@keyframes popInModal{from{transform:scale(0.8)}to{transform:scale(1)}}`;
+          document.head.appendChild(style);
+          document.body.appendChild(modal);
+          modal.querySelector('#modalStudent').onclick = ()=>{ resolve('student'); modal.remove(); style.remove(); };
+          modal.querySelector('#modalEmployer').onclick = ()=>{ resolve('employer'); modal.remove(); style.remove(); };
+        });
+        // Find matching account type
+        const accounts = (window.demoAccounts || []).filter(a=> a.type===type);
+        const user = accounts.find(a=> a.email.toLowerCase() === email.toLowerCase());
+        if(!user) return alert('No matching account for selected type');
+        // Animate login card out before redirect using a class on body
+        document.body.classList.add('logging-in');
+        setTimeout(async ()=>{
+          try { await window.demoLogin(user.email, password); } catch (err){ alert(err.message || 'Login failed'); }
+        }, 420);
       });
     </script>
   </body>

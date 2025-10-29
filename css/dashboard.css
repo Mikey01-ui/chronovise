@@ -29,6 +29,7 @@ body.dashboard { background: linear-gradient(180deg, rgba(255,255,255,.02), rgba
 
 .dash-main { padding: 20px; }
 .dash-main h2 { margin: 0 0 12px; }
+.dash-main h2:focus { outline: none; box-shadow: none; }
 .dash-section { display: none; animation: fadeIn .3s ease; }
 .dash-section.active { display: block; }
 

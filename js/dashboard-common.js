@@ -75,7 +75,11 @@
     fillUserPill(){
       const nameEl = qs('#userName'); const avatar = qs('#userAvatar');
       if(nameEl && this.user) nameEl.textContent = this.user.name || this.user.email;
-      if(avatar && this.user){ avatar.style.background = this.user.avatarColor || 'linear-gradient(135deg, var(--primary), var(--accent))'; }
+      if(avatar && this.user){
+        // If the demo user has a photo (data URI), show it; otherwise use color background
+        if(this.user.photo){ avatar.innerHTML = `<img src="${this.user.photo}" alt="avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;display:block;" />`; }
+        else { avatar.style.background = this.user.avatarColor || 'linear-gradient(135deg, var(--primary), var(--accent))'; }
+      }
     }
   }
 

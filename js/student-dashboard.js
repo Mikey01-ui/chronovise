@@ -342,6 +342,27 @@ function setupMessages(){
     loadJobs();
     loadApplications();
     renderAllStudents();
+    // Seed some demo messages from employers if the conversation is empty (so the demo looks active)
+    (function seedDemoMessages(){
+      try{
+        const user = window.currentUser; if(!user || !user.email) return;
+        const key = 'demoMessages_' + user.email;
+        const existing = JSON.parse(localStorage.getItem(key) || '[]');
+        if(existing && existing.length>0) return; // don't overwrite if messages exist
+        const employers = (window.demoAccounts||[]).filter(a=> a.type === 'employer');
+        if(!employers || employers.length===0) return;
+        const now = Date.now();
+        const samples = [];
+        // pick up to 3 employers and craft short demo messages
+        for(let i=0;i<Math.min(3, employers.length); i++){
+          const e = employers[i];
+          samples.push({ from: e.name, text: `Hi ${user.name.split(' ')[0]}, we saw your profile and think you'd be a great fit for a ${['Data Analyst','ML Engineer','Product Analyst'][i%3]} role.`, at: now - ((i+1)*86400*1000) });
+        }
+        // add a quick follow-up from student to simulate reply
+        samples.push({ from: user.name, text: `Thanks — I'm interested! Happy to chat.`, at: now - 3600*1000 });
+        localStorage.setItem(key, JSON.stringify(samples));
+      }catch(e){}
+    })();
     setupMessages();
   });
 })();
