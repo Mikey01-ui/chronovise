@@ -33,6 +33,21 @@
   const qs = (s, r=document) => r.querySelector(s);
   const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
+  // small helper to render relative times (e.g. "2h ago")
+  function timeAgo(ts){
+    try{
+      const d = Date.now() - (ts || 0);
+      const sec = Math.floor(d/1000);
+      if(sec < 60) return `${sec}s ago`;
+      const min = Math.floor(sec/60);
+      if(min < 60) return `${min}m ago`;
+      const hr = Math.floor(min/60);
+      if(hr < 24) return `${hr}h ago`;
+      const days = Math.floor(hr/24);
+      return `${days}d ago`;
+    }catch(e){ return new Date(ts).toLocaleString(); }
+  }
+
   async function loadProfile(){
     const p = await apiRequest('/api/students/profile');
   // Render profile picture (inject image before name)
@@ -77,6 +92,69 @@ function setupMessages(){
     }catch(e){ console.error('seedDemoMessagesFor failed', e); }
   }
 
+  // More robust seeding: populate the current student's inbox with messages from all demo employers
+  function seedEmployersMessagesForCurrentUser(){
+    try{
+      const user = window.currentUser; if(!user || !user.email) return;
+      const key = 'demoMessages_' + user.email;
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      if(existing && existing.length>0) return; // don't overwrite
+      const employers = (window.demoAccounts||[]).filter(a=> a.type === 'employer');
+      if(!employers || employers.length===0) return;
+      const now = Date.now(); const samples = [];
+      employers.forEach((e,i)=>{
+        samples.push({ from: e.name, text: `Hi ${user.name.split(' ')[0]}, ${e.company} is hiring for roles like ${['Data Analyst','ML Engineer','Product Analyst'][i%3]}. Interested?`, at: now - ((i+1)*3600*1000) });
+      });
+      // add a short reply from student to make conversation look natural
+      samples.push({ from: user.name, text: `Thanks — I'm interested. Happy to chat about opportunities.`, at: now - 1800*1000 });
+      localStorage.setItem(key, JSON.stringify(samples));
+      return true;
+    }catch(e){ console.error('seedEmployersMessagesForCurrentUser failed', e); return false; }
+  }
+
+  // Insert a small control bar for demo actions (simulate incoming message)
+  try{
+    if(messagesList){
+      const ctrl = document.createElement('div');
+      ctrl.style = 'display:flex;gap:8px;align-items:center;margin-bottom:8px;';
+      const sim = document.createElement('button'); sim.className='btn btn-outline'; sim.textContent='Simulate incoming';
+      sim.onclick = ()=>{
+        try{
+          const key = 'demoMessages_' + conversationEmail;
+          let msgs = JSON.parse(localStorage.getItem(key) || '[]');
+          const employers = (window.demoAccounts||[]).filter(a=> a.type === 'employer');
+          const from = (employers && employers[0] && employers[0].name) || 'Employer';
+          msgs.push({ from, text: '(simulated) Hi — this is a demo message.', at: Date.now() });
+          localStorage.setItem(key, JSON.stringify(msgs));
+          showNotification && showNotification('Simulated incoming message', 'info');
+        }catch(e){ console.error('simulate incoming failed', e); }
+      };
+      const simOut = document.createElement('button'); simOut.className='btn btn-outline'; simOut.textContent='Simulate outgoing';
+      simOut.onclick = ()=>{
+        try{
+          const key = 'demoMessages_' + conversationEmail;
+          let msgs = JSON.parse(localStorage.getItem(key) || '[]');
+          const me = (window.currentUser && window.currentUser.name) || 'You';
+          msgs.push({ from: me, text: '(simulated) This is a demo reply.', at: Date.now() });
+          localStorage.setItem(key, JSON.stringify(msgs));
+          showNotification && showNotification('Simulated outgoing message', 'success');
+        }catch(e){ console.error('simulate outgoing failed', e); }
+      };
+      ctrl.appendChild(sim); ctrl.appendChild(simOut);
+      // Add a convenience button to populate messages from demo employers (student view)
+      const populateBtn = document.createElement('button'); populateBtn.className='btn btn-gradient'; populateBtn.textContent = 'Populate from employers';
+      populateBtn.onclick = ()=>{
+        try{
+          const ok = seedEmployersMessagesForCurrentUser();
+          if(ok){ loadMessages(); updateMessagesBadge(); showNotification && showNotification('Populated messages from demo employers', 'info'); }
+          else { showNotification && showNotification('Nothing to populate (already present or no demo employers)', 'info'); }
+        }catch(e){ console.error(e); showNotification && showNotification('Populate failed', 'error'); }
+      };
+      ctrl.appendChild(populateBtn);
+      messagesList.parentNode.insertBefore(ctrl, messagesList);
+    }
+  }catch(e){}
+
   function lastReadKey(convoEmail, viewerEmail){ return `demoLastRead_${convoEmail}|${viewerEmail}`; }
   function getLastRead(convoEmail, viewerEmail){ try{ return parseInt(localStorage.getItem(lastReadKey(convoEmail, viewerEmail))||'0',10); }catch{return 0;} }
   function setLastRead(convoEmail, viewerEmail, ts){ try{ localStorage.setItem(lastReadKey(convoEmail, viewerEmail), String(ts)); }catch{} }
@@ -88,16 +166,21 @@ function setupMessages(){
     const me = (window.currentUser && window.currentUser.name) || '';
     const viewerEmail = (window.currentUser && window.currentUser.email) || '';
     const last = getLastRead(conversationEmail, viewerEmail) || 0;
-    // If no messages, show a small placeholder with a button to populate demo messages
+    // If no messages, try seeding automatically so the demo looks active, otherwise show a small placeholder
     if((!msgs || msgs.length===0) && typeof seedDemoMessagesFor === 'function'){
-      const placeholder = document.createElement('div'); placeholder.className='card';
-      placeholder.style = 'padding:14px;border-radius:10px;background:rgba(255,255,255,.02);';
-      placeholder.innerHTML = `<div style="margin-bottom:8px;">No messages yet in this conversation.</div>`;
-      const btn = document.createElement('button'); btn.className='btn btn-outline'; btn.textContent='Populate demo messages';
-      btn.onclick = ()=>{ seedDemoMessagesFor(conversationEmail); loadMessages(); updateMessagesBadge(); };
-      placeholder.appendChild(btn);
-      messagesList.appendChild(placeholder);
-      return;
+      // attempt automatic seeding once
+      try{ seedDemoMessagesFor(conversationEmail); msgs = JSON.parse(localStorage.getItem(key) || '[]'); }catch(e){}
+      // still empty? show placeholder and provide manual populate action
+      if(!msgs || msgs.length===0){
+        const placeholder = document.createElement('div'); placeholder.className='card';
+        placeholder.style = 'padding:14px;border-radius:10px;background:rgba(255,255,255,.02);';
+        placeholder.innerHTML = `<div style="margin-bottom:8px;">No messages yet in this conversation.</div>`;
+        const btn = document.createElement('button'); btn.className='btn btn-outline'; btn.textContent='Populate demo messages';
+        btn.onclick = ()=>{ seedDemoMessagesFor(conversationEmail); loadMessages(); updateMessagesBadge(); };
+        placeholder.appendChild(btn);
+        messagesList.appendChild(placeholder);
+        return;
+      }
     }
     msgs.forEach(m=>{
       const isMine = m.from === me;
@@ -105,29 +188,34 @@ function setupMessages(){
       wrapper.style = `display:flex;gap:10px;margin-bottom:8px;justify-content:${isMine? 'flex-end':'flex-start'};`;
       const avatarSrc = getAvatarByName(m.from);
       const bubble = document.createElement('div');
-      bubble.style = `max-width:72%;padding:10px 12px;border-radius:12px;background:${isMine? 'linear-gradient(90deg,#7c3aed,#a78bfa)': 'rgba(255,255,255,0.04)'};color:${isMine? '#fff':'#ddd'};`;
-      bubble.innerHTML = `<div style="font-size:13px;margin-bottom:6px;"><strong style="font-weight:600;">${m.from}</strong></div><div>${m.text}</div><div class="muted" style="font-size:11px;margin-top:6px;">${new Date(m.at).toLocaleString()}</div>`;
-      if(isMine){ wrapper.appendChild(bubble); if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); } }
-        else { if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); } wrapper.appendChild(bubble); }
-        // For messages sent by the student, show 'Seen' if any employer has read this message (demo heuristic)
-        if(isMine){
-          try{
-            const employers = (window.demoAccounts||[]).filter(a=> a.type === 'employer');
-            const viewerEmail = (window.currentUser && window.currentUser.email) || '';
-            const messageAt = m.at || 0;
-            let seenByAny = false;
-            employers.forEach(emp => {
+      bubble.className = 'msg-bubble ' + (isMine? 'mine':'their');
+      bubble.style = `max-width:72%;padding:10px 12px;border-radius:12px;position:relative;`;
+  bubble.innerHTML = `<div class="sender" style="font-size:13px;margin-bottom:6px;"><strong style="font-weight:600;">${m.from}</strong></div><div class="body">${m.text}</div><div class="muted timestamp" data-ts="${m.at}" style="font-size:11px;margin-top:6px;">${timeAgo(m.at)}</div>`;
+            if(isMine){
+              wrapper.appendChild(bubble);
+              if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); }
+              // For messages sent by the student, show 'Seen' if any employer has read this message (demo heuristic)
               try{
-                const lr = getLastRead(conversationEmail, emp.email) || 0;
-                if(lr >= messageAt) seenByAny = true;
+                const employers = (window.demoAccounts||[]).filter(a=> a.type === 'employer');
+                const messageAt = m.at || 0;
+                let seenByAny = false; let seenCount = 0;
+                employers.forEach(emp => {
+                  try{
+                    const lr = getLastRead(conversationEmail, emp.email) || 0;
+                    if(lr >= messageAt) { seenByAny = true; seenCount++; }
+                  }catch(e){}
+                });
+                if(seenByAny){ const seenTag = document.createElement('span'); seenTag.className='msg-seen'; seenTag.textContent = seenCount>1? `Seen by ${seenCount}` : 'Seen'; bubble.appendChild(seenTag); }
+                else { const del = document.createElement('span'); del.className='msg-delivered'; del.textContent = 'Delivered'; bubble.appendChild(del); }
               }catch(e){}
-            });
-            if(seenByAny){ const seenTag = document.createElement('span'); seenTag.className='msg-seen'; seenTag.textContent = 'Seen'; bubble.appendChild(seenTag); }
-          }catch(e){}
-        }
+            } else { if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); } wrapper.appendChild(bubble); }
       messagesList.appendChild(wrapper);
     });
-    messagesList.scrollTop = messagesList.scrollHeight;
+  // apply relative-time tooltips (surprise) then smooth scroll to bottom
+  try{ if(window.dashboardUtils && window.dashboardUtils.applyTimestampTooltips) window.dashboardUtils.applyTimestampTooltips(messagesList); }catch(e){}
+  try{ messagesList.scrollTo({ top: messagesList.scrollHeight, behavior: 'smooth' }); }catch(e){ messagesList.scrollTop = messagesList.scrollHeight; }
+  // focus input for quick replies
+  try{ if(messageInput) messageInput.focus({ preventScroll: true }); }catch(e){}
     // mark conversation as read now that it's rendered
     try{ setLastRead(conversationEmail, (window.currentUser && window.currentUser.email) || '', Date.now()); }catch(e){}
     // update unread badge after rendering
@@ -160,6 +248,36 @@ function setupMessages(){
     loadMessages();
     updateMessagesBadge();
   });
+
+  // Keyboard shortcut: Ctrl/Cmd + Enter to submit message
+  try{
+    if(messageInput){
+      messageInput.addEventListener('keydown', (ev)=>{
+        if((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter'){
+          ev.preventDefault();
+          messageForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+      });
+    }
+  }catch(e){}
+
+  // Export conversation as plain text
+  try{
+    const exportBtn = document.getElementById('exportConversation');
+    if(exportBtn){
+      exportBtn.addEventListener('click', ()=>{
+        try{
+          const msgs = JSON.parse(localStorage.getItem(key) || '[]') || [];
+          const lines = msgs.map(m => `${new Date(m.at).toLocaleString()} — ${m.from}: ${m.text}`);
+          const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = `${(window.currentUser && window.currentUser.email)||'conversation'}.txt`;
+          document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+          showNotification && showNotification('Conversation exported', 'info');
+        }catch(err){ console.error('export failed', err); showNotification && showNotification('Export failed', 'error'); }
+      });
+    }
+  }catch(e){}
 
   loadMessages();
   // Listen for storage events so messages sync across tabs/windows

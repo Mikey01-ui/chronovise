@@ -80,26 +80,11 @@
   ];
   // Keep a few demo employers for completeness
   const employers = [
-    {
-      id: 'employer_1',
-      type: 'employer',
-      email: 'hr@brighttech.cv',
-      name: 'BrightTech',
-      company: 'BrightTech',
-      avatarColor: '#4f46e5',
-      summary: 'BrightTech is a leading AI startup in Amsterdam, hiring for data science and engineering roles.',
-      location: 'Amsterdam'
-    },
-    {
-      id: 'employer_2',
-      type: 'employer',
-      email: 'talent@cloudnine.cv',
-      name: 'CloudNine',
-      company: 'CloudNine',
-      avatarColor: '#10b981',
-      summary: 'CloudNine builds cloud infrastructure and is looking for DevOps and backend engineers.',
-      location: 'Zurich'
-    }
+    { id: 'employer_1', type: 'employer', email: 'hr@brighttech.cv', name: 'BrightTech', company: 'BrightTech', avatarColor: '#4f46e5', summary: 'BrightTech is a leading AI startup in Amsterdam, hiring for data science and engineering roles.', location: 'Amsterdam', founded: 2018 },
+    { id: 'employer_2', type: 'employer', email: 'talent@cloudnine.cv', name: 'CloudNine', company: 'CloudNine', avatarColor: '#10b981', summary: 'CloudNine builds cloud infrastructure and is looking for DevOps and backend engineers.', location: 'Zurich', founded: 2015 },
+    { id: 'employer_3', type: 'employer', email: 'careers@novabits.cv', name: 'NovaBits', company: 'NovaBits', avatarColor: '#22d3ee', summary: 'NovaBits is a remote-first product studio shipping web products across Europe.', location: 'Remote', founded: 2016 },
+    { id: 'employer_4', type: 'employer', email: 'jobs@dataflow.cv', name: 'DataFlow', company: 'DataFlow', avatarColor: '#f59e42', summary: 'DataFlow powers data products for fintech and healthtech customers.', location: 'Rotterdam', founded: 2014 },
+    { id: 'employer_5', type: 'employer', email: 'hello@brightify.cv', name: 'Brightify', company: 'Brightify', avatarColor: '#7c3aed', summary: 'Brightify builds consumer products with delightful onboarding experiences.', location: 'Utrecht', founded: 2019 }
   ];
   const accounts = [...students, ...employers];
 
@@ -113,7 +98,71 @@
   }
 
   // Attach generated photo URIs to demo accounts so profile images display when loaded directly
-  accounts.forEach(a=>{ a.photo = makeAvatar(a.name, a.avatarColor || '#666'); });
+  accounts.forEach(a=>{ 
+    // prefer a local 'real' image in assets/people if present (naming based on email prefix), otherwise fall back to generated SVG avatar
+    try{
+      const prefix = (a.email||'').split('@')[0];
+      if(prefix){
+        // path from dashboard pages to assets
+        a.photo = `../assets/people/${prefix}.svg`;
+      }
+      // if for some reason the path is not desired, ensure fallback to generated avatar exists
+      if(!a.photo) a.photo = makeAvatar(a.name, a.avatarColor || '#666');
+    }catch(e){ a.photo = makeAvatar(a.name, a.avatarColor || '#666'); }
+  });
+
+  // --- Demo data seeding helpers (jobs, messages) persisted to localStorage ---
+  function jobsKeyForEmployer(emp){ return `demoJobs_${emp.email}`; }
+  function ensureJobsForEmployer(emp){
+    try{
+      const key = jobsKeyForEmployer(emp);
+      const existing = JSON.parse(localStorage.getItem(key) || 'null');
+      if(existing && Array.isArray(existing) && existing.length>0) return existing;
+      // generate 8-12 jobs for this company
+      const titles = ['Data Scientist','ML Engineer','Backend Engineer','Frontend Engineer','DevOps Engineer','Product Manager','Product Designer','QA Engineer','Customer Success','Marketing Specialist','Business Analyst'];
+      const types = ['Remote','Hybrid','On-site'];
+      const tagsPool = ['Python','SQL','React','AWS','Docker','Kubernetes','TensorFlow','Tableau','Figma','TypeScript','Node'];
+      const jobs = [];
+      const count = 8 + Math.floor(Math.random()*6);
+      for(let i=0;i<count;i++){
+        const title = titles[Math.floor(Math.random()*titles.length)];
+        const applicants = 5 + Math.floor(Math.random()*45);
+        const status = Math.random() > 0.18 ? 'Open' : 'Closed';
+        const postedDays = 1 + Math.floor(Math.random()*30);
+        const tags = Array.from({length:3}, ()=> tagsPool[Math.floor(Math.random()*tagsPool.length)]);
+        jobs.push({ id: `${emp.company.toLowerCase().replace(/\s+/g,'_')}_job_${i+1}`, title: `${title}`, status, applicants, location: emp.location || 'Remote', posted: `${postedDays}d`, tags, salary: `€${2000 + Math.floor(Math.random()*2500)}` });
+      }
+      try{ localStorage.setItem(key, JSON.stringify(jobs)); }catch(e){}
+      return jobs;
+    }catch(e){ console.error('ensureJobsForEmployer failed', e); return []; }
+  }
+
+  function ensureMessagesSeeded(){
+    try{
+      const studs = accounts.filter(a=> a.type === 'student');
+      const emps = accounts.filter(a=> a.type === 'employer');
+      studs.forEach((s, idx) => {
+        const key = 'demoMessages_' + s.email;
+        const existing = JSON.parse(localStorage.getItem(key) || '[]');
+        if(existing && existing.length>0) return; // don't clobber
+        const msgs = [];
+        const now = Date.now();
+        // add 2-3 employer messages from different companies
+        const sampleEmps = emps.slice(0, Math.min(3, emps.length));
+        sampleEmps.forEach((e, i) => {
+          msgs.push({ from: e.name, text: `Hi ${s.name.split(' ')[0]}, we at ${e.company} liked your profile and have roles that match your skills.`, at: now - ((i+2)*86400*1000) });
+        });
+        // add a friendly student reply
+        msgs.push({ from: s.name, text: `Thanks — I'm interested in learning more about the roles at ${sampleEmps[0] ? sampleEmps[0].company : 'your company'}.`, at: now - 3600*1000 });
+        // add follow-ups from employers
+        sampleEmps.forEach((e, i) => { msgs.push({ from: e.name, text: `Could you share your resume? We'd like to schedule a short call.`, at: now - (i*1800*1000) }); });
+        try{ localStorage.setItem(key, JSON.stringify(msgs)); }catch(e){}
+      });
+    }catch(e){ console.error('ensureMessagesSeeded failed', e); }
+  }
+
+  // Seed jobs/messages once on demo init (non-destructive)
+  try{ employers.forEach(e=> ensureJobsForEmployer(e)); ensureMessagesSeeded(); }catch(e){}
 
   function saveUser(u){ localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
   function getUser(){ const raw = localStorage.getItem(STORAGE_KEY); try{ return raw? JSON.parse(raw): null;}catch{ return null; } }
@@ -194,6 +243,9 @@
         { id:'j1', title:'Junior Data Analyst', company:'DataFlow', location:'Amsterdam', type:'Hybrid', posted:'3d', salary:'€2.6k–€3.2k', tags:['Python','SQL','Tableau'] },
         { id:'j2', title:'Product Intern', company:'Brightify', location:'Rotterdam', type:'On-site', posted:'1w', salary:'€600/mo', tags:['Figma','Research'] },
         { id:'j3', title:'React Developer (Entry)', company:'NovaBits', location:'Remote (EU)', type:'Remote', posted:'2d', salary:'€2.8k–€3.5k', tags:['React','TypeScript'] },
+        { id:'j4', title:'ML Engineer (Intern)', company:'BrightTech', location:'Amsterdam', type:'Hybrid', posted:'5d', salary:'€1.2k–€1.6k', tags:['Python','TensorFlow','Docker'] },
+        { id:'j5', title:'DevOps Engineer', company:'CloudNine', location:'Zurich', type:'On-site', posted:'6d', salary:'€3.1k–€4k', tags:['AWS','Kubernetes','CI/CD'] },
+        { id:'j6', title:'Product Designer', company:'NovaBits', location:'Remote (EU)', type:'Remote', posted:'1w', salary:'€1.8k–€2.4k', tags:['Figma','UX Research'] }
       ];
       return { ok:true, status:200, data: jobs };
     }
@@ -205,22 +257,53 @@
     }
     if(endpoint.includes('/api/employer/overview')){
       if(!user || user.type !== 'employer') return { ok:false, status:403 };
-      return { ok:true, status:200, data: { jobs: 4, applicants: 26, interviews: 5 } };
+      // derive overview from persisted jobs
+      try{
+        const jobs = JSON.parse(localStorage.getItem(jobsKeyForEmployer(user)) || '[]');
+        const jobsCount = (jobs && jobs.length) || 0;
+        const applicants = (jobs || []).reduce((s,j)=> s + (j.applicants||0), 0);
+        const interviews = Math.min(20, Math.floor(applicants/6) + Math.floor(Math.random()*6));
+        return { ok:true, status:200, data: { jobs: jobsCount, applicants, interviews } };
+      }catch(e){ return { ok:true, status:200, data: { jobs:0, applicants:0, interviews:0 } }; }
     }
     if(endpoint.includes('/api/employer/jobs')){
       if(!user || user.type !== 'employer') return { ok:false, status:403 };
-      return { ok:true, status:200, data: [
-        { id:'e1', title:'Operations Intern', status:'Open', applicants: 12 },
-        { id:'e2', title:'React Developer (Entry)', status:'Open', applicants: 7 },
-        { id:'e3', title:'Marketing Assistant', status:'Closed', applicants: 19 }
-      ] };
+      try{
+        const jobs = JSON.parse(localStorage.getItem(jobsKeyForEmployer(user)) || '[]');
+        return { ok:true, status:200, data: jobs };
+      }catch(e){ return { ok:true, status:200, data: [] }; }
     }
     if(endpoint.includes('/api/employer/applications')){
       if(!user || user.type !== 'employer') return { ok:false, status:403 };
-      return { ok:true, status:200, data: [
-        { id:'ea1', candidate:'Student 3', job:'Operations Intern', status:'New' },
-        { id:'ea2', candidate:'Student 9', job:'React Developer (Entry)', status:'Shortlisted' }
-      ] };
+      try{
+        const jobs = JSON.parse(localStorage.getItem(jobsKeyForEmployer(user)) || '[]') || [];
+        const studs = accounts.filter(a=> a.type === 'student');
+        const apps = [];
+        jobs.slice(0,8).forEach((j, i)=>{
+          const ccount = 1 + Math.floor(Math.random()*3);
+          for(let k=0;k<ccount;k++){
+            const s = studs[(i+k) % studs.length];
+            apps.push({ id:`app_${j.id}_${k}`, candidate: s.name, job: j.title, status: ['New','Under review','Interview','Shortlisted'][Math.floor(Math.random()*4)] });
+          }
+        });
+        return { ok:true, status:200, data: apps };
+      }catch(e){ return { ok:true, status:200, data: [] }; }
+    }
+    if(endpoint.includes('/api/employer/profile')){
+      if(!user || user.type !== 'employer') return { ok:false, status:403 };
+      try{
+        return { ok:true, status:200, data: {
+          company: user.company || user.name,
+          description: user.summary || `${user.company||user.name} is hiring talented people across engineering, product and design.`,
+          website: `https://${(user.company||'company').toLowerCase().replace(/\s+/g,'')}.example`,
+          founded: user.founded || (2013 + Math.floor(Math.random()*10)),
+          size: `${10 + Math.floor(Math.random()*490)} employees`,
+          industry: ['Software','AI','Cloud','Fintech','Healthcare'][Math.floor(Math.random()*5)],
+          benefits: ['Health insurance','Flexible hours','Remote work','Learning budget','Pension contribution'].slice(0, 3 + Math.floor(Math.random()*2)),
+          location: user.location || 'Remote',
+          logo: user.photo || makeAvatar(user.name, user.avatarColor || '#333')
+        } };
+      }catch(e){ return { ok:true, status:200, data: {} }; }
     }
     return { ok:false, status:404, message:`Endpoint not available in demo: ${endpoint}` };
   }
