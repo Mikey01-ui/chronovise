@@ -93,13 +93,23 @@
       }catch(e){ return 0; }
     }
     function renderStudentOptions(){
-      studentSelect.innerHTML = students.map(s=>{
-        const unread = computeUnreadForStudent(s);
-        const suffix = unread>0 ? ` (${unread})` : '';
-        return `<option value="${s.email}">${s.name} — ${s.email}${suffix}</option>`;
-      }).join('');
+      studentSelect.innerHTML = students.map(s=> `<option value="${s.email}">${s.name} — ${s.email}</option>` ).join('');
     }
     renderStudentOptions();
+    // show unread for the selected student in a badge next to select
+    const studentUnreadBadge = qs('#studentUnreadBadge');
+    function updateSelectedStudentBadge(){
+      try{
+        const sel = studentSelect.value; if(!sel) { if(studentUnreadBadge) studentUnreadBadge.style.display='none'; return; }
+        const st = students.find(s=> s.email === sel);
+        if(!st){ studentUnreadBadge.style.display='none'; return; }
+        const n = computeUnreadForStudent(st);
+        if(n>0){ studentUnreadBadge.style.display='inline-block'; studentUnreadBadge.textContent = n>99? '99+' : String(n); }
+        else { studentUnreadBadge.style.display='none'; }
+      }catch(e){ if(studentUnreadBadge) studentUnreadBadge.style.display='none'; }
+    }
+    studentSelect.addEventListener('change', ()=> updateSelectedStudentBadge());
+    updateSelectedStudentBadge();
     function getAvatarByName(name){
       try{ const acct = (window.demoAccounts||[]).find(a=> a.name === name || a.email === name); if(acct) return acct.photo || acct.avatarColor || ''; }catch{} return '';
     }
@@ -124,6 +134,11 @@
         if(isMine){
           wrapper.appendChild(bubble);
           if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); }
+          // show 'Seen' if the student has last-read >= this message time
+          try{
+            const studentLastRead = getLastRead(email, (email)); // student's own last-read for their view
+            if(studentLastRead && studentLastRead >= m.at){ const seen = document.createElement('span'); seen.className='msg-seen'; seen.textContent='Seen'; bubble.appendChild(seen); }
+          }catch(e){}
         }else{
           if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); }
           wrapper.appendChild(bubble);
@@ -173,8 +188,8 @@
       if(!ev.key) return;
       // If messages changed for any student, refresh option badges and employer badge
       if(ev.key.startsWith('demoMessages_') || ev.key.startsWith('demoLastRead_')){
-        // update option unread markers
-        renderStudentOptions();
+  // refresh options (no suffix) and selected badge
+  renderStudentOptions(); updateSelectedStudentBadge();
         const selected = studentSelect.value;
         if(ev.key === 'demoMessages_' + selected || ev.key.startsWith('demoLastRead_' + selected)){
           // if the current conversation changed, reload it

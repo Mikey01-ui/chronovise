@@ -76,7 +76,23 @@ function setupMessages(){
       bubble.style = `max-width:72%;padding:10px 12px;border-radius:12px;background:${isMine? 'linear-gradient(90deg,#7c3aed,#a78bfa)': 'rgba(255,255,255,0.04)'};color:${isMine? '#fff':'#ddd'};`;
       bubble.innerHTML = `<div style="font-size:13px;margin-bottom:6px;"><strong style="font-weight:600;">${m.from}</strong></div><div>${m.text}</div><div class="muted" style="font-size:11px;margin-top:6px;">${new Date(m.at).toLocaleString()}</div>`;
       if(isMine){ wrapper.appendChild(bubble); if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); } }
-      else { if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); } wrapper.appendChild(bubble); }
+        else { if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); } wrapper.appendChild(bubble); }
+        // For messages sent by the student, show 'Seen' if any employer has read this message (demo heuristic)
+        if(isMine){
+          try{
+            const employers = (window.demoAccounts||[]).filter(a=> a.type === 'employer');
+            const viewerEmail = (window.currentUser && window.currentUser.email) || '';
+            const messageAt = m.at || 0;
+            let seenByAny = false;
+            employers.forEach(emp => {
+              try{
+                const lr = getLastRead(conversationEmail, emp.email) || 0;
+                if(lr >= messageAt) seenByAny = true;
+              }catch(e){}
+            });
+            if(seenByAny){ const seenTag = document.createElement('span'); seenTag.className='msg-seen'; seenTag.textContent = 'Seen'; bubble.appendChild(seenTag); }
+          }catch(e){}
+        }
       messagesList.appendChild(wrapper);
     });
     messagesList.scrollTop = messagesList.scrollHeight;
