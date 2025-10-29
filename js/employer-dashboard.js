@@ -82,7 +82,24 @@
     if(!studentSelect || !loadBtn) return;
     // Populate student options
     const students = (window.demoAccounts || []).filter(a=> a.type==='student');
-    studentSelect.innerHTML = students.map(s=>`<option value="${s.email}">${s.name} — ${s.email}</option>`).join('');
+    function computeUnreadForStudent(student){
+      try{
+        const employerName = (window.currentUser && window.currentUser.name) || '';
+        const employerEmail = (window.currentUser && window.currentUser.email) || '';
+        const msgs = JSON.parse(localStorage.getItem('demoMessages_' + student.email) || '[]');
+        const lastReadKey = `demoLastRead_${student.email}|${employerEmail}`;
+        const last = parseInt(localStorage.getItem(lastReadKey)||'0',10) || 0;
+        return (msgs||[]).filter(m=> m.from !== employerName && m.at > last).length;
+      }catch(e){ return 0; }
+    }
+    function renderStudentOptions(){
+      studentSelect.innerHTML = students.map(s=>{
+        const unread = computeUnreadForStudent(s);
+        const suffix = unread>0 ? ` (${unread})` : '';
+        return `<option value="${s.email}">${s.name} — ${s.email}${suffix}</option>`;
+      }).join('');
+    }
+    renderStudentOptions();
     function getAvatarByName(name){
       try{ const acct = (window.demoAccounts||[]).find(a=> a.name === name || a.email === name); if(acct) return acct.photo || acct.avatarColor || ''; }catch{} return '';
     }
@@ -92,7 +109,11 @@
       let msgs = [];
       try{ msgs = JSON.parse(localStorage.getItem(key) || '[]'); }catch{}
       msgList.innerHTML = '';
-      const me = (common.user && common.user.name) || '';
+      const me = (window.currentUser && window.currentUser.name) || '';
+      const viewerEmail = (window.currentUser && window.currentUser.email) || '';
+      function lastReadKey(convoEmail, viewer){ return `demoLastRead_${convoEmail}|${viewer}`; }
+      function getLastRead(convoEmail, viewer){ try{ return parseInt(localStorage.getItem(lastReadKey(convoEmail,viewer))||'0',10); }catch{return 0;} }
+      function setLastRead(convoEmail, viewer, ts){ try{ localStorage.setItem(lastReadKey(convoEmail,viewer), String(ts)); }catch{} }
       msgs.forEach(m=>{
         const isMine = m.from === me;
         const wrapper = document.createElement('div'); wrapper.style = `display:flex;gap:10px;margin-bottom:8px;justify-content:${isMine? 'flex-end':'flex-start'};`;
@@ -110,6 +131,28 @@
         msgList.appendChild(wrapper);
       });
       msgList.scrollTop = msgList.scrollHeight;
+      // mark this conversation as read for the employer
+      try{ setLastRead(email, viewerEmail, Date.now()); }catch(e){}
+    }
+    // Update the badge in the sidebar with unread counts across students
+    function updateEmployerBadge(){
+      try{
+        const badge = document.getElementById('navMessagesBadge');
+        if(!badge) return;
+        const employerName = (window.currentUser && window.currentUser.name) || '';
+        const employerEmail = (window.currentUser && window.currentUser.email) || '';
+        let total = 0;
+        students.forEach(s=>{
+          try{
+            const msgs = JSON.parse(localStorage.getItem('demoMessages_' + s.email) || '[]');
+            const lastRead = getLastRead(s.email, employerEmail) || 0;
+            const unreadForConversation = (msgs||[]).filter(m=> m.from !== employerName && m.at > lastRead).length;
+            total += unreadForConversation;
+          }catch(e){}
+        });
+        if(total>0){ badge.style.display='inline-block'; badge.textContent = total>99? '99+' : String(total); }
+        else badge.style.display='none';
+      }catch(e){}
     }
     loadBtn.addEventListener('click', ()=> loadConv());
     msgForm.addEventListener('submit', e=>{
@@ -123,6 +166,34 @@
       msgInput.value = '';
       loadConv();
       showNotification('Message sent (demo).','success');
+      updateEmployerBadge();
     });
+    // storage event: refresh conversation if currently viewing that student, update options and update badge
+    window.addEventListener('storage', (ev)=>{
+      if(!ev.key) return;
+      // If messages changed for any student, refresh option badges and employer badge
+      if(ev.key.startsWith('demoMessages_') || ev.key.startsWith('demoLastRead_')){
+        // update option unread markers
+        renderStudentOptions();
+        const selected = studentSelect.value;
+        if(ev.key === 'demoMessages_' + selected || ev.key.startsWith('demoLastRead_' + selected)){
+          // if the current conversation changed, reload it
+          loadConv();
+          // flash the last message if it was from the student (incoming)
+          try{
+            const msgs = JSON.parse(localStorage.getItem('demoMessages_' + selected) || '[]');
+            const last = msgs && msgs.length ? msgs[msgs.length-1] : null;
+            const me = (window.currentUser && window.currentUser.name) || '';
+            if(last && last.from !== me){
+              // add flash class to last message element
+              const items = msgList.children; if(items && items.length){ const el = items[items.length-1]; el.classList.add('msg-incoming'); setTimeout(()=> el.classList.remove('msg-incoming'), 900); }
+            }
+          }catch(e){}
+        }
+        updateEmployerBadge();
+      }
+    });
+    // initial badge update
+    updateEmployerBadge();
   }
 })();

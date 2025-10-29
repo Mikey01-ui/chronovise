@@ -46,22 +46,25 @@ function setupMessages(){
   const messagesList = document.getElementById('messagesList');
   const messageForm = document.getElementById('messageForm');
   const messageInput = document.getElementById('messageInput');
-  // Use localStorage for demo messages; keyed by the authenticated student's email
   const user = window.currentUser || null;
-  const key = 'demoMessages_' + (user && user.email ? user.email : 'student');
+  const conversationEmail = (user && user.email) || 'student';
+  const key = 'demoMessages_' + conversationEmail;
+
   function getAvatarByName(name){
-    try{
-      const acct = (window.demoAccounts||[]).find(a=> a.name === name || a.email === name);
-      if(acct) return acct.photo || acct.avatarColor || '';
-    }catch{}
-    return '';
+    try{ const acct = (window.demoAccounts||[]).find(a=> a.name === name || a.email === name); if(acct) return acct.photo || acct.avatarColor || ''; }catch{} return '';
   }
+
+  function lastReadKey(convoEmail, viewerEmail){ return `demoLastRead_${convoEmail}|${viewerEmail}`; }
+  function getLastRead(convoEmail, viewerEmail){ try{ return parseInt(localStorage.getItem(lastReadKey(convoEmail, viewerEmail))||'0',10); }catch{return 0;} }
+  function setLastRead(convoEmail, viewerEmail, ts){ try{ localStorage.setItem(lastReadKey(convoEmail, viewerEmail), String(ts)); }catch{} }
 
   function loadMessages(){
     let msgs = [];
     try{ msgs = JSON.parse(localStorage.getItem(key)||'[]'); }catch{}
     messagesList.innerHTML = '';
     const me = (window.currentUser && window.currentUser.name) || '';
+    const viewerEmail = (window.currentUser && window.currentUser.email) || '';
+    const last = getLastRead(conversationEmail, viewerEmail) || 0;
     msgs.forEach(m=>{
       const isMine = m.from === me;
       const wrapper = document.createElement('div');
@@ -70,23 +73,34 @@ function setupMessages(){
       const bubble = document.createElement('div');
       bubble.style = `max-width:72%;padding:10px 12px;border-radius:12px;background:${isMine? 'linear-gradient(90deg,#7c3aed,#a78bfa)': 'rgba(255,255,255,0.04)'};color:${isMine? '#fff':'#ddd'};`;
       bubble.innerHTML = `<div style="font-size:13px;margin-bottom:6px;"><strong style="font-weight:600;">${m.from}</strong></div><div>${m.text}</div><div class="muted" style="font-size:11px;margin-top:6px;">${new Date(m.at).toLocaleString()}</div>`;
-      if(isMine){
-        // my message: bubble then avatar
-        wrapper.appendChild(bubble);
-        if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); }
-      }else{
-        // others: avatar then bubble
-        if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); }
-        wrapper.appendChild(bubble);
-      }
+      if(isMine){ wrapper.appendChild(bubble); if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); } }
+      else { if(avatarSrc){ const img=document.createElement('img'); img.src=avatarSrc; img.style='width:36px;height:36px;border-radius:8px;object-fit:cover;'; wrapper.appendChild(img); } wrapper.appendChild(bubble); }
       messagesList.appendChild(wrapper);
     });
     messagesList.scrollTop = messagesList.scrollHeight;
+    // mark conversation as read now that it's rendered
+    try{ setLastRead(conversationEmail, (window.currentUser && window.currentUser.email) || '', Date.now()); }catch(e){}
+    // update unread badge after rendering
+    updateMessagesBadge();
   }
+
+  function updateMessagesBadge(){
+    try{
+      const badge = document.getElementById('navMessagesBadge'); if(!badge) return;
+      let msgs = [];
+      try{ msgs = JSON.parse(localStorage.getItem(key)||'[]'); }catch{}
+      const me = (window.currentUser && window.currentUser.name) || '';
+      const viewerEmail = (window.currentUser && window.currentUser.email) || '';
+      const last = getLastRead(conversationEmail, viewerEmail) || 0;
+      const unread = msgs.filter(m => m.from !== me && m.at > last).length;
+      if(unread > 0){ badge.style.display = 'inline-block'; badge.textContent = unread>99? '99+' : String(unread); }
+      else { badge.style.display = 'none'; }
+    }catch(e){}
+  }
+
   messageForm.addEventListener('submit', e=>{
     e.preventDefault();
-    const text = messageInput.value.trim();
-    if(!text) return;
+    const text = messageInput.value.trim(); if(!text) return;
     let msgs = [];
     try{ msgs = JSON.parse(localStorage.getItem(key)||'[]'); }catch{}
     const sender = (window.currentUser && window.currentUser.name) || 'Student';
@@ -94,8 +108,28 @@ function setupMessages(){
     localStorage.setItem(key, JSON.stringify(msgs));
     messageInput.value = '';
     loadMessages();
+    updateMessagesBadge();
   });
+
   loadMessages();
+  // Listen for storage events so messages sync across tabs/windows
+  window.addEventListener('storage', (ev) => {
+    if(!ev.key) return;
+    // If the messages for this conversation change, reload and flash if it's an incoming message
+    if(ev.key === key){
+      try{
+        // determine latest message and whether it's incoming
+        const msgs = JSON.parse(localStorage.getItem(key) || '[]');
+        const last = msgs && msgs.length ? msgs[msgs.length-1] : null;
+        const me = (window.currentUser && window.currentUser.name) || '';
+        loadMessages();
+        if(last && last.from !== me){
+          const items = messagesList.children; if(items && items.length){ const el = items[items.length-1]; el.classList.add('msg-incoming'); setTimeout(()=> el.classList.remove('msg-incoming'), 900); }
+        }
+      }catch(e){ loadMessages(); }
+    }
+    if(ev.key && ev.key.startsWith('demoLastRead_')){ loadMessages(); }
+  });
 }
   qs('#profileName').textContent = p.name;
   qs('#profileEdu').textContent = p.education + (p.location ? `, ${p.location}` : '');

@@ -16,6 +16,17 @@ body.dashboard { background: linear-gradient(180deg, rgba(255,255,255,.02), rgba
 .side-nav a:hover { background: rgba(255,255,255,.05); color: #fff; }
 .side-nav a[aria-current="page"] { background: rgba(124,58,237,.16); border-color: rgba(124,58,237,.25); color: #fff; }
 
+/* Small badge used in nav for unread counts */
+.nav-badge{display:inline-block;margin-left:8px;background:#ef4444;color:#fff;border-radius:999px;padding:2px 6px;font-size:11px;vertical-align:middle}
+
+/* Incoming message flash */
+.msg-incoming{animation:msgPop .9s ease}
+@keyframes msgPop{
+  0% { transform: translateY(0) scale(1); box-shadow: 0 0 0 rgba(124,58,237,0); }
+  30% { transform: translateY(-4px) scale(1.02); box-shadow: 0 6px 20px rgba(124,58,237,0.12); }
+  100% { transform: translateY(0) scale(1); box-shadow: none; }
+}
+
 .dash-main { padding: 20px; }
 .dash-main h2 { margin: 0 0 12px; }
 .dash-section { display: none; animation: fadeIn .3s ease; }
